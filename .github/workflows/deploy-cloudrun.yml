@@ -1,0 +1,66 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: eriks-playground-378311
+  CLIENT_SERVICE: client-service
+  SERVER_SERVICE: server-service
+  CLIENT_IMAGE: gcr.io/eriks-playground-378311/client
+  SERVER_IMAGE: gcr.io/eriks-playground-378311/server
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
+      # Configure Docker to use the gcloud command-line tool as a credential
+      # helper for authentication
+      - run: |-
+          gcloud --quiet auth configure-docker
+
+      # Build and push the client Docker image
+      - name: Build and Publish Client
+        run: |-
+          docker build -t ${{ env.CLIENT_IMAGE }}:latest -f ./client/Dockerfile.prod ./client
+          docker push ${{ env.CLIENT_IMAGE }}:latest
+
+      # Build and push the server Docker image
+      - name: Build and Publish Server
+        run: |-
+          docker build -t ${{ env.SERVER_IMAGE }}:latest -f ./server/Dockerfile.prod ./server
+          docker push ${{ env.SERVER_IMAGE }}:latest
+
+      # Deploy the client image to Google Cloud Run
+      - name: Deploy Client
+        run: |-
+          gcloud run deploy ${{ env.CLIENT_SERVICE }} \
+            --image ${{ env.CLIENT_IMAGE }}:latest \
+            --platform managed \
+            --region europe-north1 \
+            --allow-unauthenticated \
+            --project ${{ env.PROJECT_ID }}
+
+      # Deploy the server image to Google Cloud Run
+      - name: Deploy Server
+        run: |-
+          gcloud run deploy ${{ env.SERVER_SERVICE }} \
+            --image ${{ env.SERVER_IMAGE }}:latest \
+            --platform managed \
+            --region europe-north1 \
+            --allow-unauthenticated \
+            --project ${{ env.PROJECT_ID }}

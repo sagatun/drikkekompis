@@ -1,0 +1,13 @@
+# Build the React app for production
+FROM node:18-alpine AS build
+
+ENV VITE_SERVER_URL=https://server-bdwsmnrktq-lz.a.run.app
+ENV VITE_ENVIRONMENT=production
+
+WORKDIR /app/client
+COPY ./package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+EXPOSE 3000
+CMD ["npm", "run", "serve"]

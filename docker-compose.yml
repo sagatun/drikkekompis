@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    volumes:
+      - ./server:/app/server
+      - /app/server/node_modules
+
+  scraper:
+    build:
+      context: ./function
+      dockerfile: Dockerfile
+    ports:
+      - 3012:3012
+    volumes:
+      - ./function:/app/function
+      - /app/function/node_modules
