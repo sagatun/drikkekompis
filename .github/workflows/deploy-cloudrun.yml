@@ -70,16 +70,5 @@ jobs:
             --image ${{ env.SERVER_IMAGE }}:latest \
             --platform ${{ env.PLATFORM }} \
             --region ${{ env.REGION }} \
-            --no-allow-unauthenticated \
+            --allow-unauthenticated \
             --project ${{ env.PROJECT_ID }}
-
-      # Grant the client service account access to the server service
-      - name: Grant Client Access to Server
-        run: |-
-          CLIENT_SERVICE_ACCOUNT=$(gcloud run services describe ${{ env.CLIENT_SERVICE }} --platform ${{ env.PLATFORM }} --region ${{ env.REGION }} --project ${{ env.PROJECT_ID }} --format 'value(status.serviceAccountName)')
-          gcloud run services add-iam-policy-binding ${{ env.SERVER_SERVICE }} \
-          --platform ${{ env.PLATFORM }} \
-          --region ${{ env.REGION }} \
-          --project ${{ env.PROJECT_ID }} \
-          --member "serviceAccount:${CLIENT_SERVICE_ACCOUNT}" \
-          --role roles/run.invoker
