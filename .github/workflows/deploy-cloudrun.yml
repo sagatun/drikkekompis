@@ -11,13 +11,12 @@ env:
   SERVER_SERVICE: server-service
   CLIENT_IMAGE: gcr.io/eriks-playground-378311/client
   SERVER_IMAGE: gcr.io/eriks-playground-378311/server
+  REGION: europe-north1
+  PLATFORM: managed
 
 jobs:
-  setup-build-publish-deploy:
-    name: Setup, Build, Publish, and Deploy
+  build:
     runs-on: ubuntu-latest
-    environment: production
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -30,8 +29,7 @@ jobs:
 
       # Configure Docker to use the gcloud command-line tool as a credential
       # helper for authentication
-      - run: |-
-          gcloud --quiet auth configure-docker
+      - run: gcloud --quiet auth configure-docker
 
       # Build and push the client Docker image
       - name: Build and Publish Client
@@ -45,13 +43,23 @@ jobs:
           docker build -t ${{ env.SERVER_IMAGE }}:latest -f ./server/Dockerfile.prod ./server
           docker push ${{ env.SERVER_IMAGE }}:latest
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Setup gcloud CLI
+      - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SA_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+
       # Deploy the client image to Google Cloud Run
       - name: Deploy Client
         run: |-
           gcloud run deploy ${{ env.CLIENT_SERVICE }} \
             --image ${{ env.CLIENT_IMAGE }}:latest \
-            --platform managed \
-            --region europe-north1 \
+            --platform ${{ env.PLATFORM }} \
+            --region ${{ env.REGION }} \
             --allow-unauthenticated \
             --project ${{ env.PROJECT_ID }}
 
@@ -60,7 +68,18 @@ jobs:
         run: |-
           gcloud run deploy ${{ env.SERVER_SERVICE }} \
             --image ${{ env.SERVER_IMAGE }}:latest \
-            --platform managed \
-            --region europe-north1 \
-            --allow-unauthenticated \
+            --platform ${{ env.PLATFORM }} \
+            --region ${{ env.REGION }} \
+            --no-allow-unauthenticated \
             --project ${{ env.PROJECT_ID }}
+
+      # Grant the client service account access to the server service
+      - name: Grant Client Access to Server
+        run: |-
+          CLIENT_SERVICE_ACCOUNT=$(gcloud run services describe ${{ env.CLIENT_SERVICE }} --platform ${{ env.PLATFORM }} --region ${{ env.REGION }} --project ${{ env.PROJECT_ID }} --format 'value(status.serviceAccountName)')
+          gcloud run services add-iam-policy-binding ${{ env.SERVER_SERVICE }} \
+          --platform ${{ env.PLATFORM }} \
+          --region ${{ env.REGION }} \
+          --project ${{ env.PROJECT_ID }} \
+          --member "serviceAccount:${CLIENT_SERVICE_ACCOUNT}" \
+          --role roles/run.invoker
