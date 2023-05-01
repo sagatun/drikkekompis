@@ -8,7 +8,6 @@ interface ChatComponentProps {
   handleSendMessage?: () => void;
   inputMessage?: string;
   isLoading?: boolean;
-  isModal?: boolean;
   setInputMessage?: (message: string) => void;
   messages?: any[];
   setMessages?: any;
@@ -19,7 +18,6 @@ export default function ChatComponent({
   handleSendMessage = () => {},
   inputMessage = "",
   isLoading = false,
-  isModal = false,
   setInputMessage = () => {},
   messages = [
     {
@@ -51,111 +49,108 @@ export default function ChatComponent({
   }, [messages, product]);
 
   return (
-    <div
-      className={`flex ${
-        isModal ? "h-full" : "h-[29rem]"
-      } items-start justify-center bg-gray-100`}
-    >
+    <div className={"flex flex-grow flex-col justify-between pt-2"}>
       <div
-        className={
-          "flex h-full w-full flex-col justify-between bg-white shadow-md dark:bg-gray-800"
-        }
+        ref={messagesContainerRef}
+        className="overflow-y-auto px-4 py-0"
+        style={{ maxHeight: "calc(100vh - 11.5rem" }}
       >
-        <div ref={messagesContainerRef} className="overflow-y-auto p-4">
-          {messages.length > 0 &&
-            messages
-              .filter((message: { role: string }) => message.role !== "system")
-              .map(
-                (
-                  message: { content: string; role: string },
-                  index: React.Key | null | undefined
-                ) => {
-                  const formattedContent = message.content
-                    .split("\n")
-                    .map((line: string, i: number) => (
-                      <React.Fragment key={i}>
-                        {line}
-                        <br />
-                      </React.Fragment>
-                    ));
-                  return (
-                    <React.Fragment key={index}>
-                      {index === recommendationIndex &&
-                        product &&
-                        product !== null && (
-                          <div className="m-2 ml-12 flex w-[10rem] justify-start">
-                            <ProductCard product={product} />
-                          </div>
-                        )}
+        {messages.length > 0 &&
+          messages
+            .filter((message: { role: string }) => message.role !== "system")
+            .map(
+              (
+                message: { content: string; role: string },
+                index: React.Key | null | undefined
+              ) => {
+                const formattedContent = message.content
+                  .split("\n")
+                  .map((line: string, i: number) => (
+                    <React.Fragment key={i}>
+                      {line}
+                      <br />
+                    </React.Fragment>
+                  ));
+                return (
+                  <React.Fragment key={index}>
+                    {index === recommendationIndex &&
+                      product &&
+                      product !== null && (
+                        <div className="m-2 ml-12 flex w-[10rem] justify-start">
+                          <ProductCard product={product} />
+                        </div>
+                      )}
+                    <div
+                      className={`my-2 flex ${
+                        message.role === "user"
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      {message.role === "assistant" && (
+                        <img
+                          className="mr-2 h-10 w-10 rounded-full"
+                          src="./Header/DrikkekompisLogo1.png"
+                          alt="Drikkekompisen"
+                        />
+                      )}
                       <div
-                        className={`my-2 flex ${
+                        className={`max-w-[80%] rounded-lg px-4 py-2 ${
                           message.role === "user"
-                            ? "justify-end"
-                            : "justify-start"
+                            ? "bg-chat-blue text-white"
+                            : "bg-chat-gray text-black"
                         }`}
                       >
-                        {message.role === "assistant" && (
-                          <img
-                            className="mr-2 h-10 w-10 rounded-full"
-                            src="./Header/DrikkekompisLogo1.png"
-                          />
-                        )}
-                        <div
-                          className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                            message.role === "user"
-                              ? "bg-chat-blue text-white"
-                              : "bg-chat-gray text-black"
-                          }`}
-                        >
-                          {formattedContent}
-                        </div>
+                        {formattedContent}
                       </div>
-                    </React.Fragment>
-                  );
-                }
-              )}
-          <div ref={messagesEndRef} />
-          {isLoading && (
-            <div className={`my-2 flex justify-start`}>
-              <img
-                className="mr-2 h-10 w-10 rounded-full"
-                src="./Header/DrikkekompisLogo1.png"
-              />
-              <div
-                className={`max-w-[80%] rounded-lg bg-chat-gray px-4 py-2 text-black`}
-              >
-                <SyncLoader
-                  color={"rgb(31, 41,55"}
-                  loading={isLoading}
-                  size="8px"
-                  margin="3px"
-                  className="flex justify-center"
-                />
-              </div>
-            </div>
-          )}
-        </div>
+                    </div>
+                  </React.Fragment>
+                );
+              }
+            )}
 
-        <div className="mt-4 flex p-4">
-          <input
-            autoFocus
-            type="text"
-            className="flex-grow rounded-lg border-2 border-gray-300 p-2"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-          />
-          <button
-            className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
-              inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
-            }`}
-            onClick={handleSendMessage}
-            disabled={inputMessage.trim() === ""}
-          >
-            Send
-          </button>
-        </div>
+        {isLoading && (
+          <div className={`my-2 flex justify-start`}>
+            <img
+              className="mr-2 h-10 w-10 rounded-full"
+              src="./Header/DrikkekompisLogo1.png"
+              alt="Drikkekompisen"
+            />
+            <div
+              className={`max-w-[80%] rounded-lg bg-chat-gray px-4 py-2 text-black`}
+            >
+              <SyncLoader
+                color={"rgb(31, 41,55"}
+                loading={isLoading}
+                size="8px"
+                margin="3px"
+                className="flex justify-center"
+              />
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="mt-2 flex p-4 pt-0">
+        <input
+          type="text"
+          className="flex-grow rounded-lg border-2 border-gray-300 p-2"
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+        />
+        <button
+          className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
+            inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
+          }`}
+          onClick={handleSendMessage}
+          disabled={inputMessage.trim() === ""}
+        >
+          Send
+        </button>
       </div>
     </div>
+    // {/* </div> */}
   );
 }

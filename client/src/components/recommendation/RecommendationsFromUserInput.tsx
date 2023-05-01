@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { createPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
 import { useMutation } from "@tanstack/react-query";
 import { Product, Store } from "../../types";
@@ -6,6 +5,7 @@ import { Product, Store } from "../../types";
 import { findCategoryInInputText } from "../../utils/recommendationsHelpers";
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
+import { useAppState } from "../../context/AppStateContext";
 
 function randomizeAndCap<T>(list: T[], maxItems: number): T[] {
   const shuffledList = list.sort(() => Math.random() - 0.5);
@@ -23,25 +23,24 @@ interface RecommendationFromUserInputProps {
 
 export default function RecommendationFromUserInput({
   productsInStore,
-  selectedStore,
-  categories,
-  selectedProducts,
-  selectedCategory,
 }: RecommendationFromUserInputProps) {
-  const [recommendedProduct, setRecommendedProduct] = useState<Product | null>(
-    null
-  );
-  const [inputMessage, setInputMessage] = useState("");
-  const [messages, setMessages] = useState<any[]>([
-    {
-      role: "assistant",
-      content: `Hei kompis! Jeg er Drikkekompis🍻, din personlige guide og ekspert på både alkoholholdige og alkoholfrie drikkevarer! 
+  const [state, dispatch] = useAppState();
 
-La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å hjelpe deg med å finne den perfekte drikken for enhver anledning.`,
-    },
-  ]);
+  const {
+    categories,
+    selectedCategory,
+    selectedProducts,
+    recommendedProduct,
+    inputMessage,
+    messages,
+  } = state;
 
-  console.log("selectedCategory", selectedCategory);
+  const setRecommendedProduct = (product: Product | null) =>
+    dispatch({ type: "SET_RECOMMENDED_PRODUCT", payload: product });
+  const setInputMessage = (message: string) =>
+    dispatch({ type: "SET_INPUT_MESSAGE", payload: message });
+  const setMessages = (newMessages: any[]) =>
+    dispatch({ type: "SET_MESSAGES", payload: newMessages });
 
   function filterProductsByCategory(products: Product[], category: string) {
     if (!category) {
@@ -75,8 +74,8 @@ La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å 
     const rawContent = response.conversationHistory.pop().content;
     const content = getContentFromResponse(rawContent);
 
-    setMessages((prev) => [
-      ...prev,
+    setMessages([
+      ...messages,
       {
         role: "assistant",
         content: content || "Error: Unable to parse content",
@@ -147,7 +146,7 @@ La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å 
     const preparedMessage = prepareChatGPTPackage(inputMessage);
     if (messages.length === 1 && preparedMessage) {
       setInputMessage("");
-      setMessages((prev) => [...prev, preparedMessage[1]]);
+      setMessages([...messages, preparedMessage[1]]);
       const packageForChatGPT = { conversationHistory: preparedMessage };
       chatGPTMutation.mutate(packageForChatGPT);
       return;
@@ -158,6 +157,7 @@ La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å 
     ];
     setInputMessage("");
     setMessages(updatedMessages);
+
     const packageForChatGPT = { conversationHistory: updatedMessages };
     chatGPTMutation.mutate(packageForChatGPT);
   };
