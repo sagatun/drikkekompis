@@ -24,7 +24,7 @@ function App() {
   }
 
   return (
-    <div className={"h-full dark:bg-red-800"}>
+    <div className={"h-full dark:bg-gray-800"}>
       <Mainpage />
     </div>
   );

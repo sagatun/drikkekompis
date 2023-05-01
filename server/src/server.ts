@@ -15,6 +15,7 @@ app.use(
       "http://localhost:3000",
       "https://drikkekompis.eu",
       "https://www.drikkekompis.eu",
+      "https://client-service-bdwsmnrktq-lz.a.run.app/", //test url
     ],
     credentials: true,
   })
