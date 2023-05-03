@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-
+import { useAppState } from "../context/AppStateContext.js";
 import { SyncLoader } from "react-spinners";
 import ProductCard from "./shared/ProductCard";
+import { getPersonalityImgUrl } from "../utils/helpers";
 
 interface ChatComponentProps {
   product?: any;
@@ -28,6 +29,10 @@ export default function ChatComponent({
 }: ChatComponentProps) {
   const [recommendationIndex, setRecommendationIndex] = useState(-1);
 
+  const [state] = useAppState();
+
+  const { personality } = state;
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -49,12 +54,8 @@ export default function ChatComponent({
   }, [messages, product]);
 
   return (
-    <div className={"flex flex-grow flex-col justify-between pt-2"}>
-      <div
-        ref={messagesContainerRef}
-        className="overflow-y-auto px-4 py-0"
-        style={{ maxHeight: "calc(100vh - 11.5rem" }}
-      >
+    <>
+      <div ref={messagesContainerRef} className="mt-8 flex-1 overflow-y-auto">
         {messages.length > 0 &&
           messages
             .filter((message: { role: string }) => message.role !== "system")
@@ -90,12 +91,12 @@ export default function ChatComponent({
                       {message.role === "assistant" && (
                         <img
                           className="mr-2 h-10 w-10 rounded-full"
-                          src="./Header/DrikkekompisLogo1.png"
+                          src={getPersonalityImgUrl(personality)}
                           alt="Drikkekompisen"
                         />
                       )}
                       <div
-                        className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                        className={`rounded-lg px-4 py-2 ${
                           message.role === "user"
                             ? "bg-chat-blue text-white"
                             : "bg-chat-gray text-black"
@@ -113,7 +114,7 @@ export default function ChatComponent({
           <div className={`my-2 flex justify-start`}>
             <img
               className="mr-2 h-10 w-10 rounded-full"
-              src="./Header/DrikkekompisLogo1.png"
+              src={getPersonalityImgUrl(personality)}
               alt="Drikkekompisen"
             />
             <div
@@ -132,7 +133,7 @@ export default function ChatComponent({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-2 flex p-4 pt-0">
+      <div className="mt-auto flex justify-between">
         <input
           type="text"
           className="flex-grow rounded-lg border-2 border-gray-300 p-2"
@@ -150,7 +151,7 @@ export default function ChatComponent({
           Send
         </button>
       </div>
-    </div>
+    </>
     // {/* </div> */}
   );
 }

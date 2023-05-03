@@ -1,32 +1,33 @@
-// import { Product, RecommendationFromUserInputProps } from "../types";
-import { randomizeAndCap } from "./helpers";
-
 export function findCategoryInInputText(
   inputText: string,
-  categories: string[]
+  categories: any[],
+  subCategories: any[]
 ): string | undefined {
-  const categoryLowerCase = categories.map((category: any) =>
-    category.name.toLowerCase().trim()
-  );
-
-  categoryLowerCase.push("vin");
-
   const cleanedInputText = inputText.replace(/[!?,.:;\/|]/g, " ").toLowerCase();
 
-  const inputTextWords = cleanedInputText.split(" ").filter((word) => word);
+  const findInText = (text: string, searchWords: string[]) => {
+    const regex = new RegExp("\\b(?:" + searchWords.join("|") + ")\\b", "i");
+    const match = text.match(regex);
+    return match && match[0];
+  };
 
-  const categoryFromUserInput = inputTextWords.find((word) => {
-    const isWordInCategories = categoryLowerCase.includes(word);
+  let categoryCode: string | undefined = undefined;
+  for (const category of categories.concat(subCategories)) {
+    const foundCategoryName = findInText(cleanedInputText, category.names);
+    if (foundCategoryName) {
+      categoryCode = category.code;
+      break;
+    }
+  }
 
-    return isWordInCategories;
-  });
-
-  if (categoryFromUserInput === "vin") {
+  if (categoryCode === "vin") {
     const randomNumber = Math.random();
     return randomNumber < 0.5 ? "hvitvin" : "rødvin";
   }
 
-  return categoryFromUserInput; //?.toLowerCase().replace(/\s+/g, "_");
+  console.log("categoryCode: ", categoryCode);
+
+  return categoryCode;
 }
 
 export function createPackageForChatGPT(
@@ -42,23 +43,6 @@ export function createPackageForChatGPT(
     productName,
   };
 }
-
-// export function createPackageForChatGPT__OLD(
-//   inputText: string,
-//   category: string,
-//   conversationHistory: Array<{ message: string }>,
-//   productList?: { productId: number; productName: string }[]
-// ) {
-//   return {
-//     inputText,
-//     category,
-//     productList:
-//       productList && productList.length > 50
-//         ? randomizeAndCap(productList, 50)
-//         : productList,
-//     conversationHistory,
-//   };
-// }
 
 export function findRecommendedProduct(
   parsedResult: {

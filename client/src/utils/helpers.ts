@@ -14,3 +14,15 @@ export function convertProductList(
     productName: product.name,
   }));
 }
+
+export function getPersonalityImgUrl(personality: string) {
+  if (personality === "expert") {
+    return "/personas/expertbot.png";
+  } else if (personality === "rapper") {
+    return "/personas/rappbot.png";
+  } else if (personality === "sarcastic") {
+    return "/personas/expertbot.png";
+  } else {
+    return "/personas/expertbot.png";
+  }
+}

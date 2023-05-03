@@ -9,6 +9,12 @@ export interface Product {
   mainCategory: {
     code: string;
     name: string;
+    url: string;
+  };
+  mainSubCategory: {
+    code: string;
+    name: string;
+    url: string;
   };
 }
 

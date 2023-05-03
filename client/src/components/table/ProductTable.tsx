@@ -234,7 +234,7 @@ export function ProductTable({
             placeholder="Søk i alle produkter...."
             className="w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 md:w-auto"
           />
-          <Pagination className={"w-full"} table={table} />
+          <Pagination table={table} />
           <PaginationCountPages table={table} />
         </div>
       </div>

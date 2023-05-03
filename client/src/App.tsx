@@ -1,6 +1,6 @@
 import React from "react";
-import Startpage from "./views/Startpage";
-import Mainpage from "./views/Mainpage";
+import Startpage from "./pages/Startpage";
+import Mainpage from "./pages/Mainpage";
 import { useAppState } from "./context/AppStateContext";
 
 function App() {
