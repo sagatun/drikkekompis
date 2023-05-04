@@ -1,55 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { ProductTable } from "../components/table/ProductTable.js";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import RecommendationFromUserInput from "../components/recommendation/RecommendationsFromUserInput";
 import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import { ClipLoader } from "react-spinners";
 import MovableChatBubble from "../components/MovableChatBubble";
-import { useAppState } from "../context/AppStateContext.js";
 import {
   categorySynonyms,
   subCategorySynonyms,
 } from "../utils/categorySynonyms.js";
+import { useMainPage } from "../hooks/useMainpage.js";
+import ViewButtons from "../components/ViewButtons.js";
 
 export default function Mainpage() {
-  const [state, dispatch] = useAppState();
   const [view, setView] = useState("chat");
+  const {
+    state,
+    setCategories,
+    setSubCategories,
+    setSelectedCategory,
+    setSelectedProducts,
+  } = useMainPage();
 
-  // Access state properties
-  const { categories, productsInStore, selectedCategory, selectedProducts } =
+  const { productsInStore, selectedProducts, categories, selectedCategory } =
     state;
-
-  // Dispatch actions
-
-  const setCategories = useCallback(
-    (categories: any[]) => {
-      dispatch({ type: "SET_CATEGORIES", payload: categories });
-    },
-    [dispatch]
-  );
-
-  const setSubCategories = useCallback(
-    (subCategories: any[]) => {
-      dispatch({ type: "SET_SUB_CATEGORIES", payload: subCategories });
-    },
-    [dispatch]
-  );
-
-  const setSelectedCategory = useCallback(
-    (category: any) => {
-      dispatch({ type: "SET_SELECTED_CATEGORY", payload: category });
-    },
-    [dispatch]
-  );
-
-  const setSelectedProducts = useCallback(
-    (products: any[]) => {
-      dispatch({ type: "SET_SELECTED_PRODUCTS", payload: products });
-    },
-    [dispatch]
-  );
 
   // Your component implementation
 
@@ -151,28 +125,7 @@ export default function Mainpage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className={"h-full bg-gray-600 p-4"}>
-        <div className="flex justify-start gap-2 align-middle">
-          <button
-            onClick={() => handleChangeView("products")}
-            className={`rounded px-4 py-2 text-white ${
-              view === "chat"
-                ? "bg-orange-500"
-                : "cursor-not-allowed bg-gray-400"
-            }`}
-          >
-            Chat
-          </button>
-          <button
-            onClick={() => handleChangeView("chat")}
-            className={`rounded px-4 py-2 text-white ${
-              view === "products"
-                ? "bg-orange-500"
-                : "cursor-not-allowed bg-gray-400"
-            }`}
-          >
-            Produkter
-          </button>
-        </div>
+        <ViewButtons view={view} handleChangeView={handleChangeView} />
         {/* <MovableChatBubble /> */}
         <div
           className="main-content flex h-full flex-col justify-between"

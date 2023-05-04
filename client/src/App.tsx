@@ -28,24 +28,6 @@ function App() {
       <Mainpage />
     </div>
   );
-  // const [selectedStore, setSelectedStore] = useState(null);
-
-  // if (!selectedStore) {
-  //   return (
-  //     <div className={"h-full dark:bg-gray-800"}>
-  //       <Startpage
-  //         selectedStore={selectedStore}
-  //         setSelectedStore={setSelectedStore}
-  //       />
-  //     </div>
-  //   );
-  // }
-
-  // return (
-  //   <div className={"h-full dark:bg-gray-800"}>
-  //     <Mainpage selectedStore={selectedStore} />
-  //   </div>
-  // );
 }
 
 export default App;

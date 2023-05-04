@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Select from "react-select";
 import { useQuery } from "@tanstack/react-query";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Store } from "../types";
+import { calculateDistance } from "../utils/geolocation";
 
 interface Props {
   selectedStore: Store | null;
@@ -23,13 +24,7 @@ function StoreDropdown({ selectedStore, setSelectedStore }: Props) {
     });
   };
 
-  useEffect(() => {
-    if (!stores.length) return;
-
-    findNearestStore();
-  }, [stores]);
-
-  async function findNearestStore() {
+  const findNearestStore = useCallback(async () => {
     if (navigator.geolocation) {
       try {
         setIsLoading(true);
@@ -75,30 +70,13 @@ function StoreDropdown({ selectedStore, setSelectedStore }: Props) {
     } else {
       alert("Geolocation is not supported by this browser.");
     }
-  }
+  }, [setSelectedStore, stores]);
 
-  const calculateDistance = (
-    lat1: number,
-    lng1: number,
-    lat2: number,
-    lng2: number
-  ) => {
-    const R = 6371; // Earth's radius in km
-    const dLat = toRad(lat2 - lat1);
-    const dLng = toRad(lng2 - lng1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLng / 2) *
-        Math.sin(dLng / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-  };
+  useEffect(() => {
+    if (!stores.length) return;
 
-  const toRad = (value: number) => {
-    return (value * Math.PI) / 180;
-  };
+    findNearestStore();
+  }, [findNearestStore, stores]);
 
   async function handleSelectChange(option: any) {
     if (option.value === "find_nearest") {
@@ -141,7 +119,7 @@ function StoreDropdown({ selectedStore, setSelectedStore }: Props) {
           onChange={handleSelectChange}
           isSearchable
           placeholder="Velg butikk..."
-          className="max-w-xs mx-auto "
+          className="mx-auto max-w-xs "
         />
       )}
       {isLoading && (
