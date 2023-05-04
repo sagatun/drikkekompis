@@ -50,17 +50,15 @@ export async function chatGPTProductConversationHandler({
 
   try {
     const response = await openaiInstance.createChatCompletion({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: conversationHistory,
-      temperature: 0.5,
+      temperature: 1,
     });
 
     const updatedConversationHistory = [
       ...conversationHistory,
       response.data.choices[0].message,
     ];
-
-    console.log("updatedConversationHistory", updatedConversationHistory);
 
     return {
       conversationText: response.data.choices[0]?.message?.content,

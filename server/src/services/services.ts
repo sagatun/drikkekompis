@@ -13,11 +13,7 @@ export async function chatGPTConversationService(req, res) {
   const openaiInstance = await getOpenaiInstance();
   const productsResponse = req.body;
 
-  console.log("productsResponse: " + JSON.stringify(productsResponse));
-
   const conversationHistory = productsResponse?.conversationHistory;
-
-  console.log("conversationHistory: " + JSON.stringify(conversationHistory));
 
   try {
     const conversation = await chatGPTProductConversationHandler({

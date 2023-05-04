@@ -42,8 +42,6 @@ export default function ProductCard({
     setShowChatModal(false);
   }
 
-  console.log("product", product);
-
   return (
     <>
       {Boolean(systemPrompt) && (

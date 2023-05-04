@@ -10,8 +10,6 @@ import {
 
 export const router = express.Router();
 
-console.log("router: " + JSON.stringify(router));
-
 router.get("/", (req, res) => {
   res.send("Hello World!");
 });
