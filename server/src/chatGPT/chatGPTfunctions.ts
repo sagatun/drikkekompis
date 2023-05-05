@@ -31,7 +31,7 @@ export async function chatGPTProductConversationHandler({
 }) {
   try {
     const response = await openaiInstance.createChatCompletion({
-      model: "gpt-4", //"gpt-3.5-turbo",
+      model: "gpt-3.5-turbo", // "gpt-4",
       messages: conversationHistory,
       temperature: 0.9,
     });

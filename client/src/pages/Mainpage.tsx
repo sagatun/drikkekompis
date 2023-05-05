@@ -25,8 +25,6 @@ export default function Mainpage() {
   const { productsInStore, selectedProducts, categories, selectedCategory } =
     state;
 
-  // Your component implementation
-
   useEffect(() => {
     if (!Boolean(productsInStore)) {
       return;
@@ -66,18 +64,12 @@ export default function Mainpage() {
     const categories = Array.from(categoryMap.values());
     const subCategories = Array.from(subCategoryMap.values());
 
-    console.log({ categories, subCategories });
-
     setCategories(categories);
     setSubCategories(subCategories);
   }, [productsInStore, setCategories, setSubCategories]);
 
   function renderRecommendationFromUserInput() {
-    // if (selectedStore && categories && productsInStore && selectedProducts) {
     return <RecommendationFromUserInput />;
-    // }
-
-    // return null;
   }
 
   function renderProductTable() {
