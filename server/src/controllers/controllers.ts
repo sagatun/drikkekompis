@@ -3,10 +3,7 @@ import {
   fetchAllProductsInStore,
 } from "../functions/fetch-functions";
 
-import {
-  getChatGPTRecommendation,
-  chatGPTConversationService,
-} from "../services/services";
+import { chatGPTConversationService } from "../services/services";
 
 export async function getAllStores(req, res) {
   const stores = await fetchAllStores();
@@ -21,12 +18,4 @@ export async function getAllProductsInStore(req, res) {
 
 export async function chatGPTConversationController(req, res) {
   chatGPTConversationService(req, res);
-}
-
-export async function getChatGPTRecommendationFromList(req, res) {
-  getChatGPTRecommendation(req, res);
-}
-
-export async function getChatGPTRecommendationsFromUserInput(req, res) {
-  getChatGPTRecommendation(req, res);
 }

@@ -5,26 +5,36 @@ export function findCategoryInInputText(
   categories: any[],
   subCategories: any[]
 ): string | undefined {
-  const cleanedInputText = inputText.replace(/[!?,.:;\/|]/g, " ").toLowerCase();
+  console.log({ categories, subCategories });
+  const cleanedInputText = inputText
+    .replace(/[!?,.:;\/|]/g, " ")
+    .toLowerCase()
+    .trim();
 
-  const findInText = (text: string, searchWords: string[]) => {
-    const regex = new RegExp("\\b(?:" + searchWords.join("|") + ")\\b", "i");
+  const vinResult = findInText(cleanedInputText, ["vin"]);
+  if (vinResult) {
+    const randomNumber = Math.random();
+    return randomNumber < 0.5 ? "hvitvin" : "rødvin";
+  }
+
+  function findInText(text: string, searchWords: string[]) {
+    console.log({ text, searchWords });
+    const regex = new RegExp(
+      "(^|\\s|\\W)(" + searchWords.join("|") + ")(\\s|\\W|$)",
+      "i"
+    );
     const match = text.match(regex);
     return match && match[0];
-  };
+  }
 
   let categoryCode: string | undefined = undefined;
   for (const category of categories.concat(subCategories)) {
     const foundCategoryName = findInText(cleanedInputText, category.names);
+    console.log({ foundCategoryName });
     if (foundCategoryName) {
       categoryCode = category.code;
       break;
     }
-  }
-
-  if (categoryCode === "vin") {
-    const randomNumber = Math.random();
-    return randomNumber < 0.5 ? "hvitvin" : "rødvin";
   }
 
   return categoryCode;

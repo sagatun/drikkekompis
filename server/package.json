@@ -5,8 +5,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "start-server": "tsx watch ./src/server.ts",
-    "start": "NODE_ENV=production tsx ./src/server.ts"
+    "start-server": "tsx watch ./src/index.ts",
+    "start": "NODE_ENV=production tsx ./src/index.ts"
   },
   "dependencies": {
     "@google-cloud/firestore": "^6.5.0",

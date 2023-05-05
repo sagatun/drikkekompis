@@ -18,6 +18,12 @@ export interface Product {
   };
 }
 
+export interface Category {
+  code: string;
+  name: string;
+  url: string;
+}
+
 export interface Store {
   id: number;
   name: string;

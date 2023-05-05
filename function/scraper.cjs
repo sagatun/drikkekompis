@@ -112,10 +112,20 @@ async function scrapeStoreByCategory(browser, storeId, category) {
     }
   });
 
-  const response = await page.goto(initialUrl, {
-    waitUntil: "networkidle2",
-    timeout: 60000,
-  });
+  let response;
+  try {
+    response = await page.goto(initialUrl, {
+      waitUntil: "networkidle2",
+      timeout: 120000, // Increase the timeout duration to 120 seconds
+    });
+  } catch (error) {
+    console.error(
+      `Error navigating to initial URL for store "${storeId}" and category "${category}":`,
+      error
+    );
+    await page.close();
+    return {};
+  }
 
   // Check if the response status is 404
   if (response.status() === 404) {
@@ -276,8 +286,11 @@ async function getTotalPages(page) {
 
     const paginationText = await page.$(".pagination-text");
 
-    console.log("Pagination text", paginationText);
-    if (paginationText) {
+    const textContent = paginationText
+      ? await paginationText.evaluate((el) => el.textContent)
+      : null;
+    console.log("Pagination text content:", textContent);
+    if (textContent) {
       const textContent = await paginationText.evaluate((el) => el.textContent);
       const totalPages = parseInt(textContent.match(/\d+$/)[0]);
       return totalPages;
@@ -299,7 +312,7 @@ async function scrapeAllProductDataFromStores() {
 
   try {
     const storeIDs = await getStoreIDs();
-    const storeIDsChunks = chunkArray(storeIDs, 6);
+    const storeIDsChunks = chunkArray(storeIDs, 5);
     const firestore = await getFirestoreInstance();
 
     // Delete outdated stores

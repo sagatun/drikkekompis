@@ -41,10 +41,10 @@ export default function Mainpage() {
         if (!categoryMap.has(code)) {
           const synonyms = categorySynonyms[code] || [];
           categoryMap.set(code, {
-            code,
-            name,
-            url,
-            names: [name, ...synonyms],
+            code: code.toLowerCase(),
+            name: name.toLowerCase(),
+            url: url.toLowerCase(),
+            names: [name.toLowerCase(), ...synonyms],
           });
         }
       }
@@ -54,10 +54,10 @@ export default function Mainpage() {
         const synonyms = subCategorySynonyms[code] || [];
         if (!subCategoryMap.has(code)) {
           subCategoryMap.set(code, {
-            code,
-            name,
-            url,
-            names: [name, ...synonyms],
+            code: code.toLowerCase(),
+            name: name.toLowerCase(),
+            url: url.toLowerCase(),
+            names: [name.toLowerCase(), ...synonyms],
           });
         }
       }
@@ -65,6 +65,9 @@ export default function Mainpage() {
 
     const categories = Array.from(categoryMap.values());
     const subCategories = Array.from(subCategoryMap.values());
+
+    console.log({ categories, subCategories });
+
     setCategories(categories);
     setSubCategories(subCategories);
   }, [productsInStore, setCategories, setSubCategories]);

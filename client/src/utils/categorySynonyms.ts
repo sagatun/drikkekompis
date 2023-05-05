@@ -1,10 +1,11 @@
 export const categorySynonyms: Record<string, string[]> = {
+  rødvin: ["rød vin"],
+  hvitvin: ["hvit vin"],
   brennevin: ["sprit"],
   rosévin: ["rosevin"],
   sider: ["cider"],
   musserende_vin: [
     "musserende",
-    "sjampis",
     "sparkling",
     "sprudlevann",
     "bobler",

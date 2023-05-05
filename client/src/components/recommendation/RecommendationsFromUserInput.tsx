@@ -93,12 +93,14 @@ export default function RecommendationFromUserInput() {
 
     const mappedProducts = products && convertProductList(products);
 
-    console.log(randomizeAndCap(mappedProducts, 50));
+    const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 50);
+
+    console.log("randomizedAndCappedProducts", randomizedAndCappedProducts);
 
     const prompt = createPromptForUserInputRecommendation(
       category,
       personality,
-      randomizeAndCap(mappedProducts, 50),
+      randomizedAndCappedProducts,
       inputText
     );
 
