@@ -1,9 +1,9 @@
-import { Product } from "src/types";
+import { Category, Product } from "src/types";
 
 export function findCategoryInInputText(
   inputText: string,
-  categories: any[],
-  subCategories: any[]
+  categories: Category[],
+  subCategories: Category[]
 ): string | undefined {
   const cleanedInputText = inputText
     .replace(/[!?,.:;\/|]/g, " ")

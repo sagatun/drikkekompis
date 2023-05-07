@@ -9,7 +9,6 @@ import {
   categorySynonyms,
   subCategorySynonyms,
 } from "../utils/categorySynonyms.js";
-import { useMainPage } from "../hooks/useMainpage.js";
 import ViewButtons from "../components/ViewButtons.js";
 import { useAppState } from "../context/AppStateContext.js";
 
@@ -49,7 +48,6 @@ export default function Mainpage() {
     state;
 
   useEffect(() => {
-    console.log("productsInStore", productsInStore);
     if (!Boolean(productsInStore)) {
       return;
     }
@@ -150,8 +148,6 @@ export default function Mainpage() {
       setView("chat");
     }
   }
-
-  console.log("view", view);
 
   return (
     <div className="flex h-screen flex-col">

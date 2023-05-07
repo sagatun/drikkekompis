@@ -3,11 +3,8 @@ import { useAppState } from "../../context/AppStateContext.js";
 import { getPersonalityImgUrl } from "../../utils/helpers";
 import CustomSelect from "../../blocks/CustomSelect.js";
 import StoreDropdown from "../StoreDropdown.js";
-import { Store } from "src/types/index.js";
 
 const siteUrl = import.meta.env.VITE_SITE_URL;
-
-console.log("siteUrl", siteUrl);
 
 function Header() {
   const [state, dispatch] = useAppState();
@@ -45,21 +42,6 @@ function Header() {
           options={personalityOptions}
           className="w-32"
         />
-        {/* <select
-          className="w-fit rounded bg-gray-500 px-4 py-2 font-bold text-white hover:bg-gray-700"
-          value={personality}
-          onChange={(e) => setPersonality(e.target.value)}
-        >
-          <option value="expert" className="bg-blue-500 hover:bg-blue-700">
-            Expert
-          </option>
-          <option value="rapper" className="bg-blue-500 hover:bg-blue-700">
-            GangsterRapper
-          </option>
-          <option value="sarcastic" className="bg-blue-500 hover:bg-blue-700">
-            Sarkastisk
-          </option>
-        </select> */}
       </div>
     </header>
   );

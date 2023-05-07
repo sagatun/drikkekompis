@@ -29,10 +29,10 @@ export default function ChatComponent({
     },
   ],
 }: ChatComponentProps) {
-  const [recommendationIndexes, setRecommendationIndex] = useState<number[]>(
-    []
-  );
-  const [shownProductCards, setShownProductCards] = useState<Product[]>([]);
+  // const [recommendationIndexes, setRecommendationIndex] = useState<number[]>(
+  //   []
+  // );
+  // const [shownProductCards, setShownProductCards] = useState<Product[]>([]);
 
   const [state] = useAppState();
 
@@ -49,29 +49,10 @@ export default function ChatComponent({
   };
 
   useEffect(() => {
-    if (messages.length > 0 && products.length > 0) {
+    if (messages.length > 0) {
       scrollToBottom();
-
-      messages.forEach((msg, index) => {
-        if (index === 0 && msg.role === "system") {
-          // Hopp over første melding hvis det er en systemmelding
-          return;
-        }
-
-        const product = products.find((product) => {
-          return msg.content.includes(`${product.name}`);
-        });
-
-        if (
-          product &&
-          !shownProductCards.some((p) => p.code === product.code)
-        ) {
-          setShownProductCards((prevCards) => [...prevCards, product]);
-          setRecommendationIndex((prevIndexes) => [...prevIndexes, index + 1]);
-        }
-      });
     }
-  }, [messages, products, shownProductCards]);
+  }, [messages]);
 
   return (
     <>
@@ -86,7 +67,6 @@ export default function ChatComponent({
                   message={message}
                   index={index}
                   products={products}
-                  recommendationIndexes={recommendationIndexes}
                 />
               )
             )}

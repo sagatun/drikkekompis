@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { createSystemPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
 import { useMutation } from "@tanstack/react-query";
 import { Product } from "../../types";
@@ -11,10 +12,10 @@ import {
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
 import { useAppState } from "../../context/AppStateContext";
-// import { getChatIntroduction } from "../../utils/getChatIntroduction";
 
 export default function RecommendationFromUserInput() {
   const [state, dispatch] = useAppState();
+  const [previousCategory, setPreviousCategory] = useState("");
 
   const {
     categories,
@@ -67,13 +68,11 @@ export default function RecommendationFromUserInput() {
     // }
   }
 
-  function prepareChatGPTPackage(inputText: string) {
+  function updateProductListOnCategoryChange(inputText: string) {
     if (inputText.length === 0) return;
 
     const categoryFromUserInput =
       findCategoryInInputText(inputText, categories, subCategories) ?? "";
-
-    console.log("categoryFromUserInput", categoryFromUserInput);
 
     const filteredProductsByCategory = categoryFromUserInput
       ? filterProductsByCategory(
@@ -126,19 +125,34 @@ export default function RecommendationFromUserInput() {
   });
 
   const handleSendMessage = () => {
-    const preparedMessage = prepareChatGPTPackage(inputMessage);
+    const categoryFound =
+      findCategoryInInputText(inputMessage, categories, subCategories) ?? "";
     setInputMessage("");
-    if (messages.length === 1 && preparedMessage) {
-      const updatedMessages = [
-        preparedMessage[0],
-        ...messages,
-        { content: inputMessage, role: "user" },
-      ];
+    if (categoryFound) {
+      const updatedProductList =
+        previousCategory !== categoryFound
+          ? updateProductListOnCategoryChange(inputMessage)
+          : [];
 
-      setMessages(updatedMessages);
-      const packageForChatGPT = { conversationHistory: updatedMessages };
-      chatGPTMutation.mutate(packageForChatGPT);
-      return;
+      // Update the previousCategory state
+      setPreviousCategory(categoryFound);
+
+      if (updatedProductList && updatedProductList?.length > 0) {
+        console.dir(updatedProductList);
+        const filteredMessages = messages.filter(
+          (message) => message.role !== "system"
+        );
+        const updatedMessages = [
+          ...updatedProductList,
+          ...filteredMessages,
+          { content: inputMessage, role: "user" },
+        ];
+
+        setMessages(updatedMessages);
+        const packageForChatGPT = { conversationHistory: updatedMessages };
+        chatGPTMutation.mutate(packageForChatGPT);
+        return;
+      }
     }
 
     const updatedMessages = [

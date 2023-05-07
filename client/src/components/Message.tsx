@@ -1,23 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ProductCard from "./shared/ProductCard";
 import { getPersonalityImgUrl } from "../utils/helpers";
 import { useAppState } from "../context/AppStateContext";
+import { Product } from "../types";
 
 interface MessageProps {
   message: { content: string; role: string };
   index: number;
   products: any[];
-  recommendationIndexes: number[];
 }
 
-export function Message({
-  message,
-  index,
-  products,
-  recommendationIndexes,
-}: MessageProps) {
+export function Message({ message, index, products }: MessageProps) {
   const [state] = useAppState();
   const { personality } = state;
+  const [productsInMessage, setProductsInMessage] = React.useState<Product[]>(
+    []
+  );
+
+  useEffect(() => {
+    const productsInMessage = products.filter((product) =>
+      message.content.includes(`${product.name}`)
+    );
+    setProductsInMessage(productsInMessage);
+  }, [message, products]);
 
   const formattedContent = message.content
     .split("\n")
@@ -30,10 +35,10 @@ export function Message({
 
   return (
     <React.Fragment key={index}>
-      {recommendationIndexes.includes(Number(index) + 2) && (
+      {productsInMessage.length > 0 && (
         <div className="m-2 ml-12 flex w-[10rem] justify-start">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {productsInMessage.map((product) => (
+            <ProductCard key={product.code} product={product} />
           ))}
         </div>
       )}
