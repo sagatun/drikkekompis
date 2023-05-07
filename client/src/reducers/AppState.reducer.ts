@@ -1,4 +1,4 @@
-import { AppState, AppStateActions } from "../types/AppStateTypes";
+import { AppState, AppStateActions } from "../types";
 
 // Define your reducer function
 export function appStateReducer(
@@ -20,8 +20,8 @@ export function appStateReducer(
       return { ...state, productsInStore: action.payload };
     case "SET_PERSONALITY":
       return { ...state, personality: action.payload };
-    case "SET_RECOMMENDED_PRODUCT":
-      return { ...state, recommendedProduct: action.payload };
+    case "SET_RECOMMENDED_PRODUCTS":
+      return { ...state, recommendedProducts: action.payload };
     case "SET_INPUT_MESSAGE":
       return { ...state, inputMessage: action.payload };
     case "SET_MESSAGES":

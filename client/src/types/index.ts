@@ -57,7 +57,7 @@ export interface AppState {
   selectedProducts: Product[];
   personality: string;
   productsInStore: Product[];
-  recommendedProduct: Product | null;
+  recommendedProducts: Product[] | [];
   inputMessage: string;
   messages: any[];
 }
@@ -71,6 +71,6 @@ export type AppStateActions =
   | { type: "SET_SELECTED_PRODUCTS"; payload: any[] }
   | { type: "SET_PRODUCTS_IN_STORE"; payload: Product[] }
   | { type: "SET_PERSONALITY"; payload: string }
-  | { type: "SET_RECOMMENDED_PRODUCT"; payload: Product | null }
+  | { type: "SET_RECOMMENDED_PRODUCTS"; payload: Product[] | [] }
   | { type: "SET_INPUT_MESSAGE"; payload: string }
   | { type: "SET_MESSAGES"; payload: any[] };

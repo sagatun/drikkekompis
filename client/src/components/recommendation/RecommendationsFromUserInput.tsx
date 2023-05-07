@@ -1,17 +1,17 @@
-import { createPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
+import { createSystemPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
 import { useMutation } from "@tanstack/react-query";
 import { Product } from "../../types";
 import {
   findCategoryInInputText,
   randomizeAndCap,
   filterProductsByCategory,
-  extractJsonFromText,
-  getContentFromResponse,
   convertProductList,
+  getNamesFromResponse,
 } from "../../utils/recommendationsUtils";
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
 import { useAppState } from "../../context/AppStateContext";
+// import { getChatIntroduction } from "../../utils/getChatIntroduction";
 
 export default function RecommendationFromUserInput() {
   const [state, dispatch] = useAppState();
@@ -23,13 +23,13 @@ export default function RecommendationFromUserInput() {
     productsInStore,
     selectedCategory,
     selectedProducts,
-    recommendedProduct,
+    recommendedProducts,
     inputMessage,
     messages,
   } = state;
 
-  const setRecommendedProduct = (product: Product | null) =>
-    dispatch({ type: "SET_RECOMMENDED_PRODUCT", payload: product });
+  const setRecommendedProducts = (products: Product[] | []) =>
+    dispatch({ type: "SET_RECOMMENDED_PRODUCTS", payload: products });
   const setInputMessage = (message: string) =>
     dispatch({ type: "SET_INPUT_MESSAGE", payload: message });
   const setMessages = (newMessages: any[]) =>
@@ -37,25 +37,34 @@ export default function RecommendationFromUserInput() {
 
   function handleChatGPTResponse(response: any) {
     const rawContent = response.conversationHistory.pop().content;
-    const content = getContentFromResponse(rawContent);
+
+    const names = productsInStore.map((product: Product) =>
+      String(product.name)
+    );
+
+    const namesFromResponse = getNamesFromResponse(rawContent, names);
 
     setMessages([
       ...messages,
       {
         role: "assistant",
-        content: content || "Error: Unable to parse content",
+        content: response.conversationText || "Error: Unable to parse content",
       },
     ]);
 
-    const parsedJson = extractJsonFromText(rawContent);
-    if (parsedJson && parsedJson.i) {
-      const recommendedProduct: Product | undefined = productsInStore.find(
-        (product: Product) => product.code === parsedJson.i
-      );
-      if (recommendedProduct) {
-        setRecommendedProduct(recommendedProduct);
-      }
+    const foundProducts = productsInStore.filter((product: Product) =>
+      [...namesFromResponse].includes(product.name)
+    );
+
+    if (foundProducts) {
+      const updatedRecommendedProducts = [
+        ...recommendedProducts,
+        ...foundProducts,
+      ];
+
+      setRecommendedProducts(updatedRecommendedProducts);
     }
+    // }
   }
 
   function prepareChatGPTPackage(inputText: string) {
@@ -82,7 +91,7 @@ export default function RecommendationFromUserInput() {
 
     const category: string =
       categoryFromUserInput ||
-      (selectedCategory && selectedCategory.label) ||
+      (selectedCategory && selectedCategory.name) ||
       "product";
 
     const products = Boolean(selectedProducts.length)
@@ -93,21 +102,16 @@ export default function RecommendationFromUserInput() {
 
     const mappedProducts = products && convertProductList(products);
 
-    const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 50);
+    const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 120);
 
-    console.log("randomizedAndCappedProducts", randomizedAndCappedProducts);
-
-    const prompt = createPromptForUserInputRecommendation(
+    const prompt = createSystemPromptForUserInputRecommendation(
       category,
       personality,
       randomizedAndCappedProducts,
       inputText
     );
 
-    const conversationHistory = [
-      { role: "assistant", content: prompt },
-      { role: "user", content: inputText },
-    ];
+    const conversationHistory = [{ role: "system", content: prompt }];
 
     return conversationHistory;
   }
@@ -123,27 +127,33 @@ export default function RecommendationFromUserInput() {
 
   const handleSendMessage = () => {
     const preparedMessage = prepareChatGPTPackage(inputMessage);
+    setInputMessage("");
     if (messages.length === 1 && preparedMessage) {
-      setInputMessage("");
-      setMessages([...messages, preparedMessage[1]]);
-      const packageForChatGPT = { conversationHistory: preparedMessage };
+      const updatedMessages = [
+        preparedMessage[0],
+        ...messages,
+        { content: inputMessage, role: "user" },
+      ];
+
+      setMessages(updatedMessages);
+      const packageForChatGPT = { conversationHistory: updatedMessages };
       chatGPTMutation.mutate(packageForChatGPT);
       return;
     }
+
     const updatedMessages = [
       ...messages,
       { content: inputMessage, role: "user" },
     ];
-    setInputMessage("");
-    setMessages(updatedMessages);
 
+    setMessages(updatedMessages);
     const packageForChatGPT = { conversationHistory: updatedMessages };
     chatGPTMutation.mutate(packageForChatGPT);
   };
 
   return (
     <ChatComponent
-      product={recommendedProduct}
+      products={recommendedProducts}
       handleSendMessage={handleSendMessage}
       inputMessage={inputMessage}
       isLoading={chatGPTMutation.isLoading}

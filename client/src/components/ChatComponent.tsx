@@ -3,9 +3,11 @@ import { useAppState } from "../context/AppStateContext.js";
 import { SyncLoader } from "react-spinners";
 import ProductCard from "./shared/ProductCard";
 import { getPersonalityImgUrl } from "../utils/helpers";
+import { Product } from "src/types/index.js";
+import { Message } from "./Message";
 
 interface ChatComponentProps {
-  product?: any;
+  products?: Product[];
   handleSendMessage?: () => void;
   inputMessage?: string;
   isLoading?: boolean;
@@ -15,7 +17,7 @@ interface ChatComponentProps {
 }
 
 export default function ChatComponent({
-  product,
+  products = [],
   handleSendMessage = () => {},
   inputMessage = "",
   isLoading = false,
@@ -27,7 +29,10 @@ export default function ChatComponent({
     },
   ],
 }: ChatComponentProps) {
-  const [recommendationIndex, setRecommendationIndex] = useState(-1);
+  const [recommendationIndexes, setRecommendationIndex] = useState<number[]>(
+    []
+  );
+  const [shownProductCards, setShownProductCards] = useState<Product[]>([]);
 
   const [state] = useAppState();
 
@@ -44,14 +49,29 @@ export default function ChatComponent({
   };
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages.length > 0 && products.length > 0) {
       scrollToBottom();
-      const index = messages.findIndex((msg) =>
-        msg.content.includes(`${product?.name}`)
-      );
-      setRecommendationIndex(index);
+
+      messages.forEach((msg, index) => {
+        if (index === 0 && msg.role === "system") {
+          // Hopp over første melding hvis det er en systemmelding
+          return;
+        }
+
+        const product = products.find((product) => {
+          return msg.content.includes(`${product.name}`);
+        });
+
+        if (
+          product &&
+          !shownProductCards.some((p) => p.code === product.code)
+        ) {
+          setShownProductCards((prevCards) => [...prevCards, product]);
+          setRecommendationIndex((prevIndexes) => [...prevIndexes, index + 1]);
+        }
+      });
     }
-  }, [messages, product]);
+  }, [messages, products, shownProductCards]);
 
   return (
     <>
@@ -60,54 +80,15 @@ export default function ChatComponent({
           messages
             .filter((message: { role: string }) => message.role !== "system")
             .map(
-              (
-                message: { content: string; role: string },
-                index: React.Key | null | undefined
-              ) => {
-                const formattedContent = message.content
-                  .split("\n")
-                  .map((line: string, i: number) => (
-                    <React.Fragment key={i}>
-                      {line}
-                      <br />
-                    </React.Fragment>
-                  ));
-                return (
-                  <React.Fragment key={index}>
-                    {index === recommendationIndex &&
-                      product &&
-                      product !== null && (
-                        <div className="m-2 ml-12 flex w-[10rem] justify-start">
-                          <ProductCard product={product} />
-                        </div>
-                      )}
-                    <div
-                      className={`my-2 flex ${
-                        message.role === "user"
-                          ? "justify-end"
-                          : "justify-start"
-                      }`}
-                    >
-                      {message.role === "assistant" && (
-                        <img
-                          className="mr-2 h-10 w-10 rounded-full"
-                          src={getPersonalityImgUrl(personality)}
-                          alt="Drikkekompisen"
-                        />
-                      )}
-                      <div
-                        className={`rounded-lg px-4 py-2 ${
-                          message.role === "user"
-                            ? "bg-chat-blue text-white"
-                            : "bg-chat-gray text-black"
-                        }`}
-                      >
-                        {formattedContent}
-                      </div>
-                    </div>
-                  </React.Fragment>
-                );
-              }
+              (message: { content: string; role: string }, index: number) => (
+                <Message
+                  key={index}
+                  message={message}
+                  index={index}
+                  products={products}
+                  recommendationIndexes={recommendationIndexes}
+                />
+              )
             )}
 
         {isLoading && (
@@ -152,6 +133,5 @@ export default function ChatComponent({
         </button>
       </div>
     </>
-    // {/* </div> */}
   );
 }

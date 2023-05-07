@@ -5,7 +5,6 @@ export function findCategoryInInputText(
   categories: any[],
   subCategories: any[]
 ): string | undefined {
-  console.log({ categories, subCategories });
   const cleanedInputText = inputText
     .replace(/[!?,.:;\/|]/g, " ")
     .toLowerCase()
@@ -18,7 +17,6 @@ export function findCategoryInInputText(
   }
 
   function findInText(text: string, searchWords: string[]) {
-    console.log({ text, searchWords });
     const regex = new RegExp(
       "(^|\\s|\\W)(" + searchWords.join("|") + ")(\\s|\\W|$)",
       "i"
@@ -30,7 +28,6 @@ export function findCategoryInInputText(
   let categoryCode: string | undefined = undefined;
   for (const category of categories.concat(subCategories)) {
     const foundCategoryName = findInText(cleanedInputText, category.names);
-    console.log({ foundCategoryName });
     if (foundCategoryName) {
       categoryCode = category.code;
       break;
@@ -86,11 +83,27 @@ export function getContentFromResponse(rawContent: string) {
   }
 }
 
-export function convertProductList(
-  products: Product[]
-): { id: string; name: string }[] {
-  return products.map((product) => ({
-    id: String(product.productId),
-    name: product.name,
-  }));
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function getNamesFromResponse(rawContent: string, names: string[]) {
+  // Escape special characters in names and create a regex pattern with word boundaries and case-insensitive flag
+  const escapedNames = names.map(escapeRegExp);
+  const pattern = new RegExp(`\\b(?:${escapedNames.join("|")})\\b`, "gi");
+
+  // Find all names in rawContent using regex pattern
+  const matchedNames = rawContent.match(pattern);
+
+  if (matchedNames) {
+    // Create a Set to remove duplicates, then convert it back to an array
+    const uniqueMatchedNames = Array.from(new Set(matchedNames));
+    return uniqueMatchedNames;
+  } else {
+    return [];
+  }
+}
+
+export function convertProductList(products: Product[]) {
+  return products.map((product) => product.name + "\n");
 }

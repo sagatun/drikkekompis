@@ -16,7 +16,7 @@ const initialState: AppState = {
   selectedProducts: [],
   productsInStore: [],
   personality: "",
-  recommendedProduct: null,
+  recommendedProducts: [],
   inputMessage: "",
   messages: [
     {

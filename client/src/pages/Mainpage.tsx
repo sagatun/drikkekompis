@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ProductTable } from "../components/table/ProductTable.js";
 import RecommendationFromUserInput from "../components/recommendation/RecommendationsFromUserInput";
 import Header from "../components/header/Header";
@@ -11,21 +11,45 @@ import {
 } from "../utils/categorySynonyms.js";
 import { useMainPage } from "../hooks/useMainpage.js";
 import ViewButtons from "../components/ViewButtons.js";
+import { useAppState } from "../context/AppStateContext.js";
 
 export default function Mainpage() {
   const [view, setView] = useState("chat");
-  const {
-    state,
-    setCategories,
-    setSubCategories,
-    setSelectedCategory,
-    setSelectedProducts,
-  } = useMainPage();
+  const [state, dispatch] = useAppState();
+
+  const setCategories = useCallback(
+    (categories: any[]) => {
+      dispatch({ type: "SET_CATEGORIES", payload: categories });
+    },
+    [dispatch]
+  );
+
+  const setSubCategories = useCallback(
+    (subCategories: any[]) => {
+      dispatch({ type: "SET_SUB_CATEGORIES", payload: subCategories });
+    },
+    [dispatch]
+  );
+
+  const setSelectedCategory = useCallback(
+    (category: any) => {
+      dispatch({ type: "SET_SELECTED_CATEGORY", payload: category });
+    },
+    [dispatch]
+  );
+
+  const setSelectedProducts = useCallback(
+    (products: any[]) => {
+      dispatch({ type: "SET_SELECTED_PRODUCTS", payload: products });
+    },
+    [dispatch]
+  );
 
   const { productsInStore, selectedProducts, categories, selectedCategory } =
     state;
 
   useEffect(() => {
+    console.log("productsInStore", productsInStore);
     if (!Boolean(productsInStore)) {
       return;
     }
@@ -69,6 +93,17 @@ export default function Mainpage() {
   }, [productsInStore, setCategories, setSubCategories]);
 
   function renderRecommendationFromUserInput() {
+    if (!Boolean(productsInStore)) {
+      return (
+        <ClipLoader
+          color={"grey"}
+          loading={!productsInStore}
+          size={30}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      );
+    }
     return <RecommendationFromUserInput />;
   }
 
@@ -115,6 +150,8 @@ export default function Mainpage() {
       setView("chat");
     }
   }
+
+  console.log("view", view);
 
   return (
     <div className="flex h-screen flex-col">

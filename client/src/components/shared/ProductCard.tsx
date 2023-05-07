@@ -9,7 +9,7 @@ import CommentAlt from "@iconscout/react-unicons/icons/uil-comment-alt";
 import CheckMark from "@iconscout/react-unicons/icons/uil-check";
 
 interface Props {
-  product: Product;
+  product: Product | undefined;
   isSelected?: boolean;
   toggleSelectHandler?: any;
 }
@@ -60,7 +60,11 @@ export default function ProductCard({
         <div className="relative">
           <img
             className="max-h-40 w-full rounded-t-md object-cover pt-12"
-            src={product?.images.length > 0 ? product?.images[2].url : ""}
+            src={
+              product && product.images && product?.images.length > 0
+                ? product?.images[2].url
+                : ""
+            }
             alt={product?.name}
             style={{ objectFit: "contain" }}
           />
