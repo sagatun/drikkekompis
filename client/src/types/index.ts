@@ -22,6 +22,7 @@ export interface Category {
   code: string;
   name: string;
   url: string;
+  names?: string[];
 }
 
 export interface Store {

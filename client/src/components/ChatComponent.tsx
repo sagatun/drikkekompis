@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useAppState } from "../context/AppStateContext.js";
 import { SyncLoader } from "react-spinners";
-import ProductCard from "./shared/ProductCard";
 import { getPersonalityImgUrl } from "../utils/helpers";
 import { Product } from "src/types/index.js";
 import { Message } from "./Message";
@@ -22,21 +21,11 @@ export default function ChatComponent({
   inputMessage = "",
   isLoading = false,
   setInputMessage = () => {},
-  messages = [
-    {
-      role: "assistant",
-      content: "Hei, jeg heter Drikkekompisen! Hvordan kan jeg hjelpe deg?",
-    },
-  ],
+  messages,
 }: ChatComponentProps) {
-  // const [recommendationIndexes, setRecommendationIndex] = useState<number[]>(
-  //   []
-  // );
-  // const [shownProductCards, setShownProductCards] = useState<Product[]>([]);
-
   const [state] = useAppState();
 
-  const { personality } = state;
+  const { personality, productsInStore } = state;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -49,7 +38,7 @@ export default function ChatComponent({
   };
 
   useEffect(() => {
-    if (messages.length > 0) {
+    if (messages && messages.length > 0) {
       scrollToBottom();
     }
   }, [messages]);
@@ -57,7 +46,8 @@ export default function ChatComponent({
   return (
     <>
       <div ref={messagesContainerRef} className="mt-8 flex-1 overflow-y-auto">
-        {messages.length > 0 &&
+        {messages &&
+          messages.length > 0 &&
           messages
             .filter((message: { role: string }) => message.role !== "system")
             .map(
@@ -104,10 +94,12 @@ export default function ChatComponent({
         />
         <button
           className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
-            inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
+            inputMessage.trim() === "" || productsInStore.length === 0
+              ? "cursor-not-allowed opacity-50"
+              : ""
           }`}
           onClick={handleSendMessage}
-          disabled={inputMessage.trim() === ""}
+          disabled={inputMessage.trim() === "" || productsInStore.length === 0}
         >
           Send
         </button>

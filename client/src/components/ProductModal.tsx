@@ -4,10 +4,6 @@ import Modal from "react-modal";
 Modal.setAppElement("#root");
 
 const ProductModal = ({ isOpen, onRequestClose, product }: any) => {
-  if (!product) {
-    return;
-  }
-
   const [showLargeImage, setShowLargeImage] = useState(false);
 
   useEffect(() => {
@@ -47,6 +43,8 @@ const ProductModal = ({ isOpen, onRequestClose, product }: any) => {
   } = product;
 
   const primaryImage = images.find((image: any) => image.type === "PRIMARY");
+
+  if (!product) return <></>;
 
   return (
     <Modal

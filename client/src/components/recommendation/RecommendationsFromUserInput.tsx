@@ -12,10 +12,12 @@ import {
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
 import { useAppState } from "../../context/AppStateContext";
+import slugify from "slugify";
 
 export default function RecommendationFromUserInput() {
   const [state, dispatch] = useAppState();
   const [previousCategory, setPreviousCategory] = useState("");
+  const [GPTProductList, setGPTProductList] = useState<string[]>([""]);
 
   const {
     categories,
@@ -39,11 +41,11 @@ export default function RecommendationFromUserInput() {
   function handleChatGPTResponse(response: any) {
     const rawContent = response.conversationHistory.pop().content;
 
-    const names = productsInStore.map((product: Product) =>
-      String(product.name)
-    );
+    // const names = filteredProducts.map((product: Product) => product.name);
 
-    const namesFromResponse = getNamesFromResponse(rawContent, names);
+    const namesFromResponse = getNamesFromResponse(rawContent, GPTProductList);
+
+    console.log("namesFromResponse: ", namesFromResponse);
 
     setMessages([
       ...messages,
@@ -54,7 +56,9 @@ export default function RecommendationFromUserInput() {
     ]);
 
     const foundProducts = productsInStore.filter((product: Product) =>
-      [...namesFromResponse].includes(product.name)
+      [...namesFromResponse].includes(
+        slugify(product.name, { lower: true, strict: true })
+      )
     );
 
     if (foundProducts) {
@@ -65,7 +69,6 @@ export default function RecommendationFromUserInput() {
 
       setRecommendedProducts(updatedRecommendedProducts);
     }
-    // }
   }
 
   function updateProductListOnCategoryChange(inputText: string) {
@@ -74,7 +77,9 @@ export default function RecommendationFromUserInput() {
     const categoryFromUserInput =
       findCategoryInInputText(inputText, categories, subCategories) ?? "";
 
-    const filteredProductsByCategory = categoryFromUserInput
+    console.log("categoryFromUserInput: ", categoryFromUserInput);
+
+    const filtered_products = categoryFromUserInput
       ? filterProductsByCategory(
           productsInStore,
           categoryFromUserInput,
@@ -91,17 +96,19 @@ export default function RecommendationFromUserInput() {
     const category: string =
       categoryFromUserInput ||
       (selectedCategory && selectedCategory.name) ||
-      "product";
+      "products";
 
     const products = Boolean(selectedProducts.length)
       ? selectedProducts
-      : filteredProductsByCategory && Boolean(filteredProductsByCategory.length)
-      ? filteredProductsByCategory
+      : filtered_products && Boolean(filtered_products.length)
+      ? filtered_products
       : productsInStore;
 
     const mappedProducts = products && convertProductList(products);
 
     const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 120);
+
+    setGPTProductList(randomizedAndCappedProducts);
 
     const prompt = createSystemPromptForUserInputRecommendation(
       category,
@@ -128,9 +135,10 @@ export default function RecommendationFromUserInput() {
     const categoryFound =
       findCategoryInInputText(inputMessage, categories, subCategories) ?? "";
     setInputMessage("");
-    if (categoryFound) {
+
+    if (categoryFound || messages.length === 1) {
       const updatedProductList =
-        previousCategory !== categoryFound
+        previousCategory !== categoryFound || messages.length === 1
           ? updateProductListOnCategoryChange(inputMessage)
           : [];
 
@@ -138,7 +146,6 @@ export default function RecommendationFromUserInput() {
       setPreviousCategory(categoryFound);
 
       if (updatedProductList && updatedProductList?.length > 0) {
-        console.dir(updatedProductList);
         const filteredMessages = messages.filter(
           (message) => message.role !== "system"
         );

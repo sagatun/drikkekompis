@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import React, { ReactElement, useEffect, useMemo, useState } from "react";
 import ProductCards from "./ProductCards";
 import { Product } from "../../types";
 import ProductCard from "../shared/ProductCard";
@@ -27,25 +26,15 @@ export function ProductTable({
   setSelectedProducts,
   selectedCategory,
   setSelectedCategory,
-}: any): React.ReactElement {
-  const [data, setData] = React.useState(productsData);
-  const [showSelectedProducts, setShowSelectedProducts] = React.useState(false);
+}: any): ReactElement {
+  const [data] = useState(productsData);
+  const [showSelectedProducts, setShowSelectedProducts] = useState(false);
 
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnFilters, setColumnFilters] = React.useState<any[]>([]);
-  const [globalFilter, setGlobalFilter] = React.useState("");
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnFilters, setColumnFilters] = useState<any[]>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
 
-  useEffect(() => {
-    const selectedIds = Object.keys(rowSelection);
-
-    const selectedProductsByCategory = selectedIds.map(
-      (id) => table?.getCoreRowModel().rowsById[id].original
-    );
-
-    setSelectedProducts(selectedProductsByCategory);
-  }, [rowSelection]);
-
-  const columns = React.useMemo(
+  const columns = useMemo(
     () => [
       {
         id: "select",
@@ -184,6 +173,16 @@ export function ProductTable({
     // debugColumns: false,
   });
 
+  useEffect(() => {
+    const selectedIds = Object.keys(rowSelection);
+
+    const selectedProductsByCategory = selectedIds.map(
+      (id) => table?.getCoreRowModel().rowsById[id].original
+    );
+
+    setSelectedProducts(selectedProductsByCategory);
+  }, [rowSelection, setSelectedProducts, table]);
+
   return (
     <div className="mx-auto max-w-7xl">
       <div className="flex flex-col items-center justify-between md:flex-col">
@@ -204,12 +203,6 @@ export function ProductTable({
                 <React.Fragment key={product.productId}>
                   <ProductCard product={product} />
                 </React.Fragment>
-                // <li
-                //   key={product.productId}
-                //   className="my-1 rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out hover:bg-gray-300"
-                // >
-                //   {`${product.name} (${product.mainCategory.name})`}
-                // </li>
               );
             })}
             <li

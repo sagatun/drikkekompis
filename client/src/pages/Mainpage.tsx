@@ -5,12 +5,9 @@ import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import { ClipLoader } from "react-spinners";
 import MovableChatBubble from "../components/MovableChatBubble";
-import {
-  categorySynonyms,
-  subCategorySynonyms,
-} from "../utils/categorySynonyms.js";
 import ViewButtons from "../components/ViewButtons.js";
 import { useAppState } from "../context/AppStateContext.js";
+import useCategories from "../hooks/useCategories.js";
 
 export default function Mainpage() {
   const [view, setView] = useState("chat");
@@ -47,48 +44,8 @@ export default function Mainpage() {
   const { productsInStore, selectedProducts, categories, selectedCategory } =
     state;
 
-  useEffect(() => {
-    if (!Boolean(productsInStore)) {
-      return;
-    }
-    const categoryMap = new Map();
-    const subCategoryMap = new Map();
-
-    productsInStore.forEach((product: any) => {
-      if (product.mainCategory) {
-        const { code, name, url } = product.mainCategory;
-
-        if (!categoryMap.has(code)) {
-          const synonyms = categorySynonyms[code] || [];
-          categoryMap.set(code, {
-            code: code.toLowerCase(),
-            name: name.toLowerCase(),
-            url: url.toLowerCase(),
-            names: [name.toLowerCase(), ...synonyms],
-          });
-        }
-      }
-
-      if (product.mainSubCategory) {
-        const { code, name, url } = product.mainSubCategory;
-        const synonyms = subCategorySynonyms[code] || [];
-        if (!subCategoryMap.has(code)) {
-          subCategoryMap.set(code, {
-            code: code.toLowerCase(),
-            name: name.toLowerCase(),
-            url: url.toLowerCase(),
-            names: [name.toLowerCase(), ...synonyms],
-          });
-        }
-      }
-    });
-
-    const categories = Array.from(categoryMap.values());
-    const subCategories = Array.from(subCategoryMap.values());
-
-    setCategories(categories);
-    setSubCategories(subCategories);
-  }, [productsInStore, setCategories, setSubCategories]);
+  // Map categories
+  useCategories(productsInStore, setCategories, setSubCategories);
 
   function renderRecommendationFromUserInput() {
     if (!Boolean(productsInStore)) {

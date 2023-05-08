@@ -1,23 +1,28 @@
-import React from "react";
+import React, { InputHTMLAttributes, useRef, useEffect } from "react";
+
+interface IndeterminateCheckboxProps
+  extends InputHTMLAttributes<HTMLInputElement> {
+  indeterminate?: boolean;
+}
 
 export function IndeterminateCheckbox({
   indeterminate,
   className = "",
   ...rest
-}: any) {
-  const ref = React.useRef(null);
+}: IndeterminateCheckboxProps) {
+  const ref = useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
-    if (typeof indeterminate === "boolean") {
+  useEffect(() => {
+    if (typeof indeterminate === "boolean" && ref.current) {
       ref.current.indeterminate = !rest.checked && indeterminate;
     }
-  }, [ref, indeterminate]);
+  }, [indeterminate, rest.checked]);
 
   return (
     <input
       type="checkbox"
       ref={ref}
-      className={className + " cursor-pointer"}
+      className={`${className} cursor-pointer`}
       {...rest}
     />
   );

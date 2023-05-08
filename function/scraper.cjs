@@ -179,13 +179,12 @@ async function scrapeStoreByCategory(browser, storeId, category) {
 }
 
 async function getStoreIDs() {
-  // if (process.env.NODE_ENV === "production") {
-  if (true) {
+  if (process.env.NODE_ENV === "production") {
     const storesRes = await fetchAllStores();
     const storeIds = storesRes.map((store) => store.storeId);
     return storeIds.sort(() => Math.random() - 0.5); // randomize the order of the array
   } else {
-    return ["402"]; //["115", "200", "269", "368"];
+    return ["200"]; //["115", "200", "269", "368"];
   }
 }
 async function fetchAllStores() {
@@ -318,6 +317,12 @@ async function scrapeAllProductDataFromStores() {
     // Delete outdated stores
     await deleteOutdatedStores(firestore, storeIDs);
 
+    const allProductsCollectionRef = firestore.collection("allProducts");
+    const allProductsSnapshot = await allProductsCollectionRef.get();
+    const existingProducts = new Set(
+      allProductsSnapshot.docs.map((doc) => doc.data().code)
+    );
+
     for (const storeIDsChunk of storeIDsChunks) {
       console.log("Scraping stores chunk...", storeIDsChunk);
 
@@ -363,11 +368,22 @@ async function scrapeAllProductDataFromStores() {
                     const batch = firestore.batch();
 
                     productChunk.forEach(([productId, product]) => {
-                      const productRef = productsCollectionRef.doc(productId);
-                      batch.set(
-                        productRef,
-                        scrapedProductToPlainObject(product)
-                      );
+                      if (!existingProducts.has(productId)) {
+                        const productRef = productsCollectionRef.doc(productId);
+                        batch.set(
+                          productRef,
+                          scrapedProductToPlainObject(product)
+                        );
+                        existingProducts.add(productId);
+
+                        // Add product to allProducts collection
+                        const allProductsRef =
+                          allProductsCollectionRef.doc(productId);
+                        batch.set(
+                          allProductsRef,
+                          scrapedProductToPlainObject(product)
+                        );
+                      }
                     });
 
                     await batch.commit();

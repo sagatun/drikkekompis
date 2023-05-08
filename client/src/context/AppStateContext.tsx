@@ -43,11 +43,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
 
   const { selectedStore, personality } = state;
 
-  const {
-    data: productsInStore,
-    isLoading: isFetchProductsInStoreLoading,
-    isError: isFetchProductsInStoreError,
-  } = useQuery({
+  const { data: productsInStore } = useQuery({
     queryKey: ["fetchProductsInStore", selectedStore?.id],
     enabled: Boolean(selectedStore),
     queryFn: async () => {
