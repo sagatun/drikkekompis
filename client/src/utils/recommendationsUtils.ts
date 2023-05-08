@@ -6,8 +6,6 @@ export function findCategoryInInputText(
   categories: Category[],
   subCategories: Category[]
 ): string | undefined {
-  console.log({ inputText, categories, subCategories });
-
   const cleanedInputText = slugify(inputText, { lower: true, strict: true });
 
   function findInText(text: string, searchWords: string[]) {
@@ -96,8 +94,6 @@ function escapeRegExp(string: string) {
 }
 
 export function getNamesFromResponse(rawContent: string, names: string[]) {
-  console.log({ rawContent, names });
-
   // Slugify rawContent
   const slugifiedContent = slugify(rawContent, { lower: true, strict: true });
 
@@ -112,15 +108,11 @@ export function getNamesFromResponse(rawContent: string, names: string[]) {
 
   // Find all names in slugifiedContent using regex pattern
   const matchedNames = slugifiedContent.match(pattern);
-  console.log({ matchedNames });
   if (matchedNames) {
-    console.log("kom hit");
     // Create a Set to remove duplicates, then convert it back to an array
     const uniqueMatchedNames = Array.from(new Set(matchedNames));
-    console.log({ uniqueMatchedNames });
     return uniqueMatchedNames;
   } else {
-    console.log("kom hit.... :(");
     return [];
   }
 }

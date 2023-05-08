@@ -44,8 +44,11 @@ export default function ChatComponent({
   }, [messages]);
 
   return (
-    <>
-      <div ref={messagesContainerRef} className="mt-8 flex-1 overflow-y-auto">
+    <div className="flex min-h-screen flex-col">
+      <div
+        ref={messagesContainerRef}
+        className="mt-8 h-screen flex-1 overflow-y-auto"
+      >
         {messages &&
           messages.length > 0 &&
           messages
@@ -84,7 +87,7 @@ export default function ChatComponent({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-auto flex justify-between">
+      <div className="mt-auto flex flex-shrink-0 justify-between">
         <input
           type="text"
           className="flex-grow rounded-lg border-2 border-gray-300 p-2"
@@ -104,6 +107,6 @@ export default function ChatComponent({
           Send
         </button>
       </div>
-    </>
+    </div>
   );
 }

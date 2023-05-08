@@ -29,12 +29,13 @@ function Header() {
           <a href={siteUrl}>Drikkekompis🍻</a>
         </h1>
         <img
+          loading="lazy"
           src={getPersonalityImgUrl(personality)}
           alt="Drikkekompis Logo"
           className="header-logo h-16 w-16"
         />
       </div>
-      <div className="container mx-auto flex  items-center justify-end text-xs">
+      <div className="container mx-auto flex  items-center justify-between text-xs">
         <StoreDropdown />
         <CustomSelect
           value={personality}

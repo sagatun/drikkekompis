@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useCallback } from "react";
-import Select from "react-select";
 import { useQuery } from "@tanstack/react-query";
 import { calculateDistance } from "../utils/geolocation";
 import { useAppState } from "../context/AppStateContext";
 import { fetchStores } from "../api/storeService";
+import CustomSelect from "../blocks/CustomSelect";
 
 function StoreDropdown() {
   const [state, dispatch] = useAppState();
   const [stores, setStores] = useState<any>([]);
   const [sortedStores, setSortedStores] = useState<any>([]);
-
+  const [isFindingNearestStore, setIsFindingNearestStore] = useState(false);
   const [geoShared, setGeoShared] = useState(false);
 
   // Access state properties
   const { selectedStore } = state;
+
+  console.log({ selectedStore });
 
   const setSelectedStore = useCallback(
     (store: any) => dispatch({ type: "SET_SELECTED_STORE", payload: store }),
@@ -22,7 +24,7 @@ function StoreDropdown() {
 
   const fetchStoresCallback = useCallback(() => fetchStores(), []);
 
-  useQuery({
+  const { isLoading: storesIsLoading } = useQuery({
     queryKey: ["stores"],
     queryFn: fetchStoresCallback,
     onSuccess: (data) => setStores(data),
@@ -35,7 +37,8 @@ function StoreDropdown() {
   };
 
   useEffect(() => {
-    if (!stores.length) return;
+    if (!!selectedStore || !stores) return;
+    setIsFindingNearestStore(true);
 
     const findNearestStore = async () => {
       if (navigator.geolocation) {
@@ -73,54 +76,67 @@ function StoreDropdown() {
           setSortedStores(
             sortedStores.sort((a: any, b: any) => a.distance - b.distance)
           );
+          setIsFindingNearestStore(false);
         } catch (e) {
           console.log(e);
+          setIsFindingNearestStore(false);
         }
       } else {
         alert("Geolocation is not supported by this browser.");
+        setIsFindingNearestStore(false);
       }
     };
 
     findNearestStore();
   }, [setSelectedStore, selectedStore, stores]);
 
-  async function handleSelectChange(option: any) {
-    if (option.value === "find_nearest") {
+  async function handleSelectChange(optionvalue: string) {
+    if (optionvalue === "find_nearest") {
       try {
         await getPosition();
       } catch (e) {
         alert("Du må dele lokasjon for å finne nærmeste butikk");
       }
     } else {
+      const option = storeOptions.find(
+        (option) => option.value === optionvalue
+      );
+
       setSelectedStore(option.store);
     }
   }
 
-  const storeOptions = [
-    { value: "find_nearest", label: "Finn nærmeste butikk" },
-    ...sortedStores.map((store: any) => ({
-      value: store.id,
-      label:
-        geoShared && store.distance
-          ? `${store.name} (${Number(store.distance).toFixed(0)} km unna)`
-          : store.name,
-      store: store,
-    })),
-  ];
+  const storeOptions =
+    sortedStores.length > 0
+      ? [
+          { value: "find_nearest", label: "Finn nærmeste butikk" },
+          ...sortedStores.map((store: any) => ({
+            value: store.id,
+            label:
+              geoShared && store.distance
+                ? `${store.name} (${Number(store.distance).toFixed(0)} km unna)`
+                : store.name,
+            store: store,
+          })),
+        ]
+      : [
+          { value: "find_nearest", label: "Finn nærmeste butikk" },
+          ...stores.map((store: any) => ({
+            value: store.id,
+            label: store.name,
+            store: store,
+          })),
+        ];
 
   return (
-    <Select
-      value={
-        selectedStore && {
-          value: selectedStore.id,
-          label: selectedStore.name,
-        }
-      }
+    <CustomSelect
+      value={selectedStore?.id ?? ""}
       options={storeOptions}
       onChange={handleSelectChange}
       isSearchable
       placeholder="Velg butikk..."
-      className="mx-auto max-w-xs "
+      className="w-fit-content"
+      isLoading={storesIsLoading || isFindingNearestStore}
     />
   );
 }
