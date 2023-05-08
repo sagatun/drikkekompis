@@ -95,6 +95,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
     };
     loadPersonality();
   }, [personality]);
+
   return (
     <AppStateContext.Provider value={[state, dispatch]}>
       {children}

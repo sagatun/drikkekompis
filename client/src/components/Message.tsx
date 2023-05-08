@@ -3,6 +3,7 @@ import ProductCard from "./shared/ProductCard";
 import { getPersonalityImgUrl } from "../utils/helpers";
 import { useAppState } from "../context/AppStateContext";
 import { Product } from "../types";
+import StoreDropdown from "./StoreDropdown";
 
 interface MessageProps {
   message: { content: string; role: string };
@@ -12,7 +13,7 @@ interface MessageProps {
 
 export function Message({ message, index, products }: MessageProps) {
   const [state] = useAppState();
-  const { personality } = state;
+  const { personality, selectedStore } = state;
   const [productsInMessage, setProductsInMessage] = React.useState<Product[]>(
     []
   );
@@ -62,6 +63,14 @@ export function Message({ message, index, products }: MessageProps) {
           }`}
         >
           {formattedContent}
+          {message.role === "assistant" && !selectedStore && (
+            <>
+              {`Hvis jeg skal gi deg anbefalinger, må du velge en butikk først. 
+              Du kan gjøre det ved å trykke på menyen under.
+              `}
+              <StoreDropdown />
+            </>
+          )}
         </div>
       </div>
     </React.Fragment>
