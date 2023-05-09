@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Product } from "../types";
 import {
   categorySynonyms,
   subCategorySynonyms,
 } from "../utils/categorySynonyms.js";
+import { useAppState } from "../context/AppState.context";
 
 interface Category {
   code: string;
@@ -13,11 +14,23 @@ interface Category {
 }
 
 // Define your custom hook
-function useCategories(
-  productsInStore: Product[],
-  setCategories: (categories: Category[]) => void,
-  setSubCategories: (subCategories: Category[]) => void
-) {
+function useCategories(productsInStore: Product[]) {
+  const [, dispatch] = useAppState();
+
+  const setCategories = useCallback(
+    (categories: any[]) => {
+      dispatch({ type: "SET_CATEGORIES", payload: categories });
+    },
+    [dispatch]
+  );
+
+  const setSubCategories = useCallback(
+    (subCategories: any[]) => {
+      dispatch({ type: "SET_SUB_CATEGORIES", payload: subCategories });
+    },
+    [dispatch]
+  );
+
   useEffect(() => {
     if (!Boolean(productsInStore)) {
       return;

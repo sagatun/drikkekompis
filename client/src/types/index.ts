@@ -54,6 +54,7 @@ export interface AppState {
   selectedStore: any;
   categories: any[];
   subCategories: any[];
+  view: string;
   selectedCategory: any;
   selectedProducts: Product[];
   personality: string;
@@ -74,4 +75,5 @@ export type AppStateActions =
   | { type: "SET_PERSONALITY"; payload: string }
   | { type: "SET_RECOMMENDED_PRODUCTS"; payload: Product[] | [] }
   | { type: "SET_INPUT_MESSAGE"; payload: string }
-  | { type: "SET_MESSAGES"; payload: any[] };
+  | { type: "SET_MESSAGES"; payload: any[] }
+  | { type: "SET_VIEW"; payload: string };

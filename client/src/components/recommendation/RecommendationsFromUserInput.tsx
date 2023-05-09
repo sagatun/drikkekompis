@@ -11,7 +11,7 @@ import {
 } from "../../utils/recommendationsUtils";
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
-import { useAppState } from "../../context/AppStateContext";
+import { useAppState } from "../../context/AppState.context";
 import slugify from "slugify";
 
 export default function RecommendationFromUserInput() {

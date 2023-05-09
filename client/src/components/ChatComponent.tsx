@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import { useAppState } from "../context/AppStateContext.js";
+import { useAppState } from "../context/AppState.context.js";
 import { SyncLoader } from "react-spinners";
 import { getPersonalityImgUrl } from "../utils/helpers";
 import { Product } from "src/types/index.js";
 import { Message } from "./Message";
+// @ts-ignore
+import Redo from "@iconscout/react-unicons/icons/uil-redo";
+import { SelectProductsModal } from "./SelectProductsModal.js";
 
 interface ChatComponentProps {
   products?: Product[];
@@ -25,17 +28,18 @@ export default function ChatComponent({
 }: ChatComponentProps) {
   const [state] = useAppState();
 
-  const { personality, productsInStore } = state;
+  const { personality, productsInStore, selectedProducts } = state;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const inputMessageRef = useRef(null);
 
-  const scrollToBottom = () => {
+  function scrollToBottom() {
     if (messagesEndRef.current && messagesContainerRef.current) {
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
-  };
+  }
 
   useEffect(() => {
     if (messages && messages.length > 0) {
@@ -43,12 +47,23 @@ export default function ChatComponent({
     }
   }, [messages]);
 
+  function getSelectProductsStyle() {
+    return inputMessage.length > 0
+      ? {
+          opacity: 0,
+          transition: "opacity 0.3s ease-in-out",
+          pointerEvents: "none",
+        }
+      : {
+          opacity: 1,
+          transition: "opacity 0.3s ease-in-out",
+          pointerEvents: "all",
+        };
+  }
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <div
-        ref={messagesContainerRef}
-        className="mt-8 h-screen flex-1 overflow-y-auto"
-      >
+    <>
+      <div ref={messagesContainerRef} className="overflow-y-auto">
         {messages &&
           messages.length > 0 &&
           messages
@@ -71,9 +86,7 @@ export default function ChatComponent({
               src={getPersonalityImgUrl(personality)}
               alt="Drikkekompisen"
             />
-            <div
-              className={`max-w-[80%] rounded-lg bg-chat-gray px-4 py-2 text-black`}
-            >
+            <div className={`rounded-lg bg-chat-gray px-4 py-2 text-black`}>
               <SyncLoader
                 color={"rgb(31, 41,55"}
                 loading={isLoading}
@@ -87,14 +100,25 @@ export default function ChatComponent({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="mt-auto flex flex-shrink-0 justify-between">
-        <input
-          type="text"
-          className="flex-grow rounded-lg border-2 border-gray-300 p-2"
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-        />
+      <div className="flex justify-between py-4">
+        <div className="relative flex flex-grow">
+          <SelectProductsModal
+            style={getSelectProductsStyle()}
+            value={selectedProducts.length}
+          />
+          <input
+            type="text"
+            className="flex flex-grow rounded-lg border-2 border-gray-300 p-2"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            style={{
+              transition: "margin 0.3s ease-in-out",
+              marginLeft: inputMessage.length > 0 ? "-1rem" : "1.5rem",
+            }}
+          />
+        </div>
+
         <button
           className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
             inputMessage.trim() === "" || productsInStore.length === 0
@@ -107,6 +131,6 @@ export default function ChatComponent({
           Send
         </button>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import { ProductTable } from "../components/table/ProductTable.js";
 import RecommendationFromUserInput from "../components/recommendation/RecommendationsFromUserInput";
 import Header from "../components/header/Header";
@@ -6,46 +6,38 @@ import Footer from "../components/footer/Footer";
 import { ClipLoader } from "react-spinners";
 import MovableChatBubble from "../components/MovableChatBubble";
 import ViewButtons from "../components/ViewButtons.js";
-import { useAppState } from "../context/AppStateContext.js";
+import { useAppState } from "../context/AppState.context.js";
 import useCategories from "../hooks/useCategories.js";
 
 export default function Mainpage() {
-  const [view, setView] = useState("chat");
-  const [state, dispatch] = useAppState();
+  const [state] = useAppState();
 
-  const setCategories = useCallback(
-    (categories: any[]) => {
-      dispatch({ type: "SET_CATEGORIES", payload: categories });
-    },
-    [dispatch]
-  );
+  const { productsInStore, view } = state;
 
-  const setSubCategories = useCallback(
-    (subCategories: any[]) => {
-      dispatch({ type: "SET_SUB_CATEGORIES", payload: subCategories });
-    },
-    [dispatch]
-  );
+  const headerContainerRef = useRef<HTMLDivElement>(null);
+  const buttonContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  const setSelectedCategory = useCallback(
-    (category: any) => {
-      dispatch({ type: "SET_SELECTED_CATEGORY", payload: category });
-    },
-    [dispatch]
-  );
-
-  const setSelectedProducts = useCallback(
-    (products: any[]) => {
-      dispatch({ type: "SET_SELECTED_PRODUCTS", payload: products });
-    },
-    [dispatch]
-  );
-
-  const { productsInStore, selectedProducts, categories, selectedCategory } =
-    state;
+  useEffect(() => {
+    if (
+      headerContainerRef.current &&
+      buttonContainerRef.current &&
+      chatContainerRef.current
+    ) {
+      const windowHeight = window.innerHeight;
+      const headerContainerHeight = headerContainerRef.current.offsetHeight;
+      const buttonContainerHeight = buttonContainerRef.current.offsetHeight;
+      const chatContainerMaxHeight =
+        windowHeight - headerContainerHeight - buttonContainerHeight;
+      chatContainerRef.current.style.height = `${chatContainerMaxHeight - 8}px`;
+      chatContainerRef.current.style.maxHeight = `${
+        chatContainerMaxHeight - 8
+      }px`;
+    }
+  }, [headerContainerRef, buttonContainerRef, chatContainerRef, view]);
 
   // Map categories
-  useCategories(productsInStore, setCategories, setSubCategories);
+  useCategories(productsInStore);
 
   function renderRecommendationFromUserInput() {
     if (!Boolean(productsInStore)) {
@@ -77,52 +69,35 @@ export default function Mainpage() {
       );
     }
 
-    if (
-      categories &&
-      productsInStore &&
-      selectedProducts &&
-      setSelectedProducts
-    ) {
-      return (
-        <ProductTable
-          categories={categories}
-          productsData={productsInStore}
-          selectedProducts={selectedProducts}
-          setSelectedProducts={setSelectedProducts}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-      );
-    }
-
-    return null;
-  }
-
-  function handleChangeView(view: string) {
-    if (view === "chat") {
-      setView("products");
-    } else {
-      setView("chat");
-    }
+    return <ProductTable />;
   }
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className={"h-full bg-gray-600 p-4"}>
-        <ViewButtons view={view} handleChangeView={handleChangeView} />
-        {/* <MovableChatBubble /> */}
-        <div
-          className="main-content flex h-full flex-col justify-between"
-          style={{ height: "calc(100vh - 11.5rem)" }}
-        >
-          {/*TODO: Finne en måte å vise anbefaling fra brukerinput på*/}
-          {view === "chat"
-            ? renderRecommendationFromUserInput()
-            : renderProductTable()}
-        </div>
-        {/* <Footer /> */}
+    <div className="mx-auto flex min-h-[100vh] flex-col  bg-gray-600 ">
+      <div className="header-container" ref={headerContainerRef}>
+        <Header />
       </div>
+      <div
+        className="button-container mx-auto w-[600px] max-w-[600px]   px-4 py-8"
+        ref={buttonContainerRef}
+      >
+        <ViewButtons />
+        {/* <MovableChatBubble /> */}
+      </div>
+      {view === "chat" && (
+        <div
+          className="chat-container mx-auto  flex h-full max-w-[600px] flex-col justify-between px-4"
+          ref={chatContainerRef}
+        >
+          {renderRecommendationFromUserInput()}
+        </div>
+      )}
+      {view === "products" && (
+        <div className="products-container mx-auto  flex h-full flex-col justify-between px-4">
+          {renderProductTable()}
+        </div>
+      )}
+      {/* <Footer /> */}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useRef, ChangeEventHandler } from "react";
+import React, { useState, useRef, useEffect, ChangeEventHandler } from "react";
 import slugify from "slugify";
 
 interface Option {
@@ -14,6 +14,7 @@ interface CustomSelectProps {
   isSearchable?: boolean;
   placeholder?: string;
   isLoading?: boolean;
+  triggerElement: JSX.Element;
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -24,10 +25,28 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   isSearchable = false,
   placeholder = "",
   isLoading = false,
+  triggerElement = <div>Test</div>,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleOptionSelect = (optionValue: string) => {
     setDropdownOpen(false);
@@ -61,49 +80,38 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const hasHits = filteredOptions.length > 0;
 
-  const displayInputValue = options.find(
-    (option) => option.value === value
-  )?.label;
-
   return (
-    <div className={`relative ${className}`}>
-      {isLoading ? (
-        <div>Henter butikker...</div>
-      ) : (
-        <>
-          <div className="relative">
-            {isSearchable && isDropdownOpen ? (
-              <input
-                ref={inputRef}
-                type="text"
-                className="w-full cursor-text rounded bg-gray-100 px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                value={searchTerm}
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-                onChange={handleSearchChange}
-                aria-label="Select a value"
-                placeholder={placeholder}
-              />
-            ) : (
-              <input
-                type="text"
-                className="w-full cursor-pointer rounded bg-gray-100 px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                value={displayInputValue || ""}
-                readOnly
-                onFocus={handleSearchFocus}
-                onBlur={handleSearchBlur}
-                aria-label="Select a value"
-                placeholder={placeholder}
-              />
-            )}
-          </div>
-        </>
-      )}
+    <div className={`${className}`} ref={dropdownRef}>
+      <>
+        <div className="">
+          {React.cloneElement(triggerElement, {
+            onClick: () => setDropdownOpen(!isDropdownOpen),
+          })}
+        </div>
+      </>
 
       {hasHits && options.length > 0 && isDropdownOpen && (
-        <div className="z-100 absolute mt-2 h-80 w-full overflow-auto rounded shadow-lg">
+        <div
+          style={{
+            width: "calc(100vw - 2rem)",
+            zIndex: 10,
+          }}
+          className="absolute right-4 mt-2 h-fit  max-h-[70vh] overflow-auto rounded bg-gray-100 p-2 shadow-lg"
+        >
+          {isSearchable && (
+            <input
+              autoFocus
+              className="mb-4 w-full cursor-text rounded  bg-white px-2 py-2 text-gray-800 "
+              value={searchTerm}
+              onFocus={handleSearchFocus}
+              onBlur={handleSearchBlur}
+              onChange={handleSearchChange}
+              aria-label="Search"
+              placeholder={placeholder}
+            />
+          )}
           <ul
-            className="shadow-xs rounded-md bg-white py-1"
+            className="shadow-xs rounded-md py-1"
             role="listbox"
             aria-labelledby="listbox-label"
             aria-activedescendant={value}
@@ -113,7 +121,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
               <li
                 key={option.value}
                 onClick={() => handleOptionSelect(option.value)}
-                className={`cursor-pointer px-4 py-2 hover:bg-blue-500 hover:text-white ${
+                className={`cursor-pointer px-2 py-1 hover:bg-blue-500 hover:text-white sm:px-4 sm:py-2 ${
                   value === option.value
                     ? "bg-blue-500 text-white"
                     : "text-gray-800 hover:bg-gray-200"
@@ -127,7 +135,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           </ul>
         </div>
       )}
-      <input type="hidden" value={value} />
+      {/* <input type="hidden" value={value} /> */}
     </div>
   );
 };

@@ -1,11 +1,17 @@
-import React, { ReactElement, useEffect, useMemo, useState } from "react";
+import React, {
+  ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from "react";
 import ProductCards from "./ProductCards";
 import { Product } from "../../types";
 import ProductCard from "../shared/ProductCard";
 import { CategorySelect } from "./CategorySelect";
 import { DebouncedInput } from "./DebouncedInput";
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
-
+import { useAppState } from "../../context/AppState.context.js";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -19,20 +25,29 @@ import {
 import { Pagination } from "./pagination/Pagination";
 import { PaginationCountPages } from "./pagination/Pagination_CountPages";
 
-export function ProductTable({
-  productsData,
-  categories,
-  selectedProducts,
-  setSelectedProducts,
-  selectedCategory,
-  setSelectedCategory,
-}: any): ReactElement {
-  const [data] = useState(productsData);
+export function ProductTable() {
   const [showSelectedProducts, setShowSelectedProducts] = useState(false);
+  const [state, dispatch] = useAppState();
 
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+
+  const setSelectedCategory = useCallback(
+    (category: any) => {
+      dispatch({ type: "SET_SELECTED_CATEGORY", payload: category });
+    },
+    [dispatch]
+  );
+
+  const setSelectedProducts = useCallback(
+    (products: any[]) => {
+      dispatch({ type: "SET_SELECTED_PRODUCTS", payload: products });
+    },
+    [dispatch]
+  );
+
+  const { categories, productsInStore: data, selectedProducts } = state;
 
   const columns = useMemo(
     () => [
@@ -184,9 +199,9 @@ export function ProductTable({
   }, [rowSelection, setSelectedProducts, table]);
 
   return (
-    <div className="mx-auto max-w-7xl">
-      <div className="flex flex-col items-center justify-between md:flex-col">
-        <button
+    <div className="mx-auto">
+      <div className="flex flex-col items-center justify-between">
+        {/* <button
           onClick={() => setShowSelectedProducts((prev) => !prev)}
           className="my-4 w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out hover:bg-gray-300"
         >
@@ -212,21 +227,22 @@ export function ProductTable({
               Nullstill listen
             </li>
           </ul>
-        )}
+        )} */}
         <div className="flex w-full flex-col items-center justify-between space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-          <CategorySelect
+          <DebouncedInput
+            value={globalFilter ?? ""}
+            onChange={(value: any) => setGlobalFilter(String(value))}
+            placeholder="Søk i alle produkter...."
+            className="mb-8 w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 md:w-auto"
+          />
+          {/* <CategorySelect
             categories={categories}
             setColumnFilters={setColumnFilters}
             selectedCategory={selectedCategory}
             setSelectedCategory={setSelectedCategory}
             className="w-full md:w-auto"
-          />
-          <DebouncedInput
-            value={globalFilter ?? ""}
-            onChange={(value: any) => setGlobalFilter(String(value))}
-            placeholder="Søk i alle produkter...."
-            className="w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 md:w-auto"
-          />
+          /> */}
+
           <Pagination table={table} />
           <PaginationCountPages table={table} />
         </div>

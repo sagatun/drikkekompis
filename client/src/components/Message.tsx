@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import ProductCard from "./shared/ProductCard";
 import { getPersonalityImgUrl } from "../utils/helpers";
-import { useAppState } from "../context/AppStateContext";
+import { useAppState } from "../context/AppState.context";
 import { Product } from "../types";
 import StoreDropdown from "./StoreDropdown";
 
@@ -37,14 +37,14 @@ export function Message({ message, index, products }: MessageProps) {
   return (
     <React.Fragment key={index}>
       {productsInMessage.length > 0 && (
-        <div className="m-2 ml-12 flex w-[10rem] justify-start">
+        <div className="m-2 ml-12 flex justify-start">
           {productsInMessage.map((product) => (
             <ProductCard key={product.code} product={product} />
           ))}
         </div>
       )}
       <div
-        className={`my-2 flex ${
+        className={`my-2 flex  ${
           message.role === "user" ? "justify-end" : "justify-start"
         }`}
       >
@@ -63,14 +63,6 @@ export function Message({ message, index, products }: MessageProps) {
           }`}
         >
           {formattedContent}
-          {message.role === "assistant" && !selectedStore && (
-            <>
-              {`Hvis jeg skal gi deg anbefalinger, må du velge en butikk først. 
-              Du kan gjøre det ved å trykke på menyen under.
-              `}
-              <StoreDropdown />
-            </>
-          )}
         </div>
       </div>
     </React.Fragment>
