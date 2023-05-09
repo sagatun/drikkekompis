@@ -4,6 +4,7 @@ import { getPersonalityImgUrl } from "../utils/helpers";
 import { useAppState } from "../context/AppState.context";
 import { Product } from "../types";
 import StoreDropdown from "./StoreDropdown";
+import { SmoothCarousel } from "./SmoothCarousel";
 
 interface MessageProps {
   message: { content: string; role: string };
@@ -37,10 +38,8 @@ export function Message({ message, index, products }: MessageProps) {
   return (
     <React.Fragment key={index}>
       {productsInMessage.length > 0 && (
-        <div className="m-2 ml-12 flex justify-start">
-          {productsInMessage.map((product) => (
-            <ProductCard key={product.code} product={product} />
-          ))}
+        <div className="my-2  flex justify-center">
+          <SmoothCarousel productsInMessage={productsInMessage} />
         </div>
       )}
       <div

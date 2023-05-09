@@ -29,14 +29,16 @@ export function SelectProductsModal({ value, ...props }: Props) {
   return (
     <>
       <button className="relative" {...props} onClick={openModal}>
-        <div
-          className={
-            "absolute bottom-5 left-3 h-6 w-fit min-w-[1.5rem] rounded-full bg-orange-400 p-1 text-xs text-white"
-          }
-        >
-          {value}
-        </div>
-        <ListUL className={""} />
+        {value !== 0 && (
+          <div
+            className={
+              "absolute bottom-6 left-4 h-6 w-fit min-w-[1.5rem] rounded-full bg-orange-400 p-1 text-xs text-white"
+            }
+          >
+            {value}
+          </div>
+        )}
+        <ListUL className={"h-8 w-8"} />
       </button>
       <Modal
         ariaHideApp={false}

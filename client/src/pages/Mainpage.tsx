@@ -19,21 +19,36 @@ export default function Mainpage() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (
-      headerContainerRef.current &&
-      buttonContainerRef.current &&
-      chatContainerRef.current
-    ) {
-      const windowHeight = window.innerHeight;
-      const headerContainerHeight = headerContainerRef.current.offsetHeight;
-      const buttonContainerHeight = buttonContainerRef.current.offsetHeight;
-      const chatContainerMaxHeight =
-        windowHeight - headerContainerHeight - buttonContainerHeight;
-      chatContainerRef.current.style.height = `${chatContainerMaxHeight - 8}px`;
-      chatContainerRef.current.style.maxHeight = `${
-        chatContainerMaxHeight - 8
-      }px`;
-    }
+    const handleResize = () => {
+      if (
+        headerContainerRef.current &&
+        buttonContainerRef.current &&
+        chatContainerRef.current
+      ) {
+        const windowHeight = window.innerHeight;
+        const headerContainerHeight = headerContainerRef.current.offsetHeight;
+        const buttonContainerHeight = buttonContainerRef.current.offsetHeight;
+        const chatContainerMaxHeight =
+          windowHeight - headerContainerHeight - buttonContainerHeight;
+        chatContainerRef.current.style.height = `${
+          chatContainerMaxHeight - 8
+        }px`;
+        chatContainerRef.current.style.maxHeight = `${
+          chatContainerMaxHeight - 8
+        }px`;
+      }
+    };
+
+    // Kjør resize-håndteringsfunksjonen når komponenten er montert
+    handleResize();
+
+    // Lytt etter endringer i vindusstørrelsen
+    window.addEventListener("resize", handleResize);
+
+    // Fjern event listener når komponenten er demontert
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [headerContainerRef, buttonContainerRef, chatContainerRef, view]);
 
   // Map categories
@@ -78,7 +93,7 @@ export default function Mainpage() {
         <Header />
       </div>
       <div
-        className="button-container mx-auto w-[600px] max-w-[600px]   px-4 py-8"
+        className="button-container mx-auto w-full max-w-[600px]   px-4 py-8"
         ref={buttonContainerRef}
       >
         <ViewButtons />
@@ -86,7 +101,7 @@ export default function Mainpage() {
       </div>
       {view === "chat" && (
         <div
-          className="chat-container mx-auto  flex h-full max-w-[600px] flex-col justify-between px-4"
+          className="chat-container mx-auto  flex h-full max-w-[600px] flex-col justify-end px-4"
           ref={chatContainerRef}
         >
           {renderRecommendationFromUserInput()}

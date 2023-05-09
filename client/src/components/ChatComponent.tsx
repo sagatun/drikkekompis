@@ -32,7 +32,6 @@ export default function ChatComponent({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const inputMessageRef = useRef(null);
 
   function scrollToBottom() {
     if (messagesEndRef.current && messagesContainerRef.current) {
@@ -114,7 +113,7 @@ export default function ChatComponent({
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             style={{
               transition: "margin 0.3s ease-in-out",
-              marginLeft: inputMessage.length > 0 ? "-1rem" : "1.5rem",
+              marginLeft: inputMessage.length > 0 ? "-2rem" : "1rem",
             }}
           />
         </div>
