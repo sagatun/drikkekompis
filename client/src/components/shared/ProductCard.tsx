@@ -19,39 +19,8 @@ export default function ProductCard({
   isSelected,
   toggleSelectHandler,
 }: Props) {
-  const [systemPrompt, setSystemPrompt] = React.useState<any>(null);
-  const [showChatModal, setShowChatModal] = React.useState(false);
-
-  useEffect(() => {
-    async function createSystemPrompt() {
-      if (product) {
-        const systemPrompt = createSystemPromptForProductConversation(product);
-        setSystemPrompt(systemPrompt);
-      }
-    }
-    createSystemPrompt();
-  }, [product]);
-
-  function openModal() {
-    document.body.classList.add("modal-open");
-    setShowChatModal(true);
-  }
-
-  function closeModal() {
-    document.body.classList.remove("modal-open");
-    setShowChatModal(false);
-  }
-
   return (
     <>
-      {Boolean(systemPrompt) && (
-        <ChatModal
-          isOpen={showChatModal}
-          onRequestClose={closeModal}
-          systemPrompt={systemPrompt}
-          product={product}
-        />
-      )}
       <div
         className={`flex w-full cursor-pointer flex-col justify-between rounded-md border shadow-md transition duration-200 ease-in-out hover:shadow-lg ${
           isSelected ? "bg-white opacity-50" : "bg-white"
@@ -98,10 +67,7 @@ export default function ProductCard({
             <div className="text-xl font-bold">{product?.price} kr</div>
 
             {!!toggleSelectHandler && (
-              <button
-                onClick={openModal}
-                className="flex gap-2 rounded-md bg-gray-900 px-2 py-2 text-white transition duration-200 ease-in-out hover:bg-gray-800"
-              >
+              <button className="flex gap-2 rounded-md bg-gray-900 px-2 py-2 text-white transition duration-200 ease-in-out hover:bg-gray-800">
                 <CommentAlt size="16" className="text-2xl" />
               </button>
             )}

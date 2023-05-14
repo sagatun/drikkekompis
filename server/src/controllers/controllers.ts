@@ -4,7 +4,10 @@ import {
   fetchAllProductsInStore,
 } from "../functions/fetch-functions";
 
-import { chatGPTConversationService } from "../services/services";
+import {
+  chatGPTConversationService,
+  vinmonopoletService,
+} from "../services/services";
 
 export async function getAllStores(req, res) {
   const stores = await fetchAllStores();
@@ -16,6 +19,10 @@ export async function getAllProducts(req, res) {
   res.send(allProducts);
 }
 
+export async function vinmonopoletTest(req, res) {
+  vinmonopoletService(req, res);
+}
+
 export async function getAllProductsInStore(req, res) {
   const storeId = req.params.storeId;
   const allProductsInStore = await fetchAllProductsInStore(storeId);
@@ -23,5 +30,5 @@ export async function getAllProductsInStore(req, res) {
 }
 
 export async function chatGPTConversationController(req, res) {
-  chatGPTConversationService(req, res);
+  vinmonopoletService(req, res);
 }

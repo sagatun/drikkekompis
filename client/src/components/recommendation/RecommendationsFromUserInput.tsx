@@ -77,8 +77,6 @@ export default function RecommendationFromUserInput() {
     const categoryFromUserInput =
       findCategoryInInputText(inputText, categories, subCategories) ?? "";
 
-    console.log("categoryFromUserInput: ", categoryFromUserInput);
-
     const filtered_products = categoryFromUserInput
       ? filterProductsByCategory(
           productsInStore,
@@ -110,11 +108,12 @@ export default function RecommendationFromUserInput() {
 
     setGPTProductList(randomizedAndCappedProducts);
 
+    const persona = productsInStore.length > 0 ? personality : "no-products";
+
     const prompt = createSystemPromptForUserInputRecommendation(
       category,
-      personality,
-      randomizedAndCappedProducts,
-      inputText
+      persona,
+      randomizedAndCappedProducts
     );
 
     const conversationHistory = [{ role: "system", content: prompt }];

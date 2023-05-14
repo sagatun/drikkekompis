@@ -35,11 +35,15 @@ export function Message({ message, index, products }: MessageProps) {
       </React.Fragment>
     ));
 
+  console.log({ productsInMessage });
+
+  console.log(productsInMessage.length > 0);
+
   return (
     <React.Fragment key={index}>
       {productsInMessage.length > 0 && (
-        <div className="my-2  flex justify-center">
-          <SmoothCarousel productsInMessage={productsInMessage} />
+        <div className="  mb-2 mt-12 flex items-start justify-start">
+          <SmoothCarousel products={productsInMessage} />
         </div>
       )}
       <div

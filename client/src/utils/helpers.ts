@@ -17,12 +17,12 @@ export function convertProductList(
 
 export function getPersonalityImgUrl(personality: string) {
   if (personality === "expert") {
-    return "/personas/expertbot.png";
+    return "/personas/expertbot192.png";
   } else if (personality === "rapper") {
-    return "/personas/rappbot.png";
+    return "/personas/rappbot512.png";
   } else if (personality === "sarcastic") {
-    return "/personas/expertbot.png";
+    return "/personas/expertbot192.png";
   } else {
-    return "/personas/expertbot.png";
+    return "/personas/expertbot512.png";
   }
 }

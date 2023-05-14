@@ -5,8 +5,8 @@ import {
   getAllProducts,
   getAllProductsInStore,
   chatGPTConversationController,
+  vinmonopoletTest,
 } from "../controllers/controllers";
-import { get } from "http";
 
 export const router = express.Router();
 
@@ -21,3 +21,5 @@ router.get("/get-all-stores", getAllStores);
 router.get("/get-all-products", getAllProducts);
 
 router.get("/get-all-products-in-store/:storeId", getAllProductsInStore);
+
+router.get("/vinmonopolet", vinmonopoletTest);

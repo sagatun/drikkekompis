@@ -28,7 +28,7 @@ export default function ChatComponent({
 }: ChatComponentProps) {
   const [state] = useAppState();
 
-  const { personality, productsInStore, selectedProducts } = state;
+  const { personality, selectedProducts } = state;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -120,12 +120,10 @@ export default function ChatComponent({
 
         <button
           className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
-            inputMessage.trim() === "" || productsInStore.length === 0
-              ? "cursor-not-allowed opacity-50"
-              : ""
+            inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
           }`}
           onClick={handleSendMessage}
-          disabled={inputMessage.trim() === "" || productsInStore.length === 0}
+          disabled={inputMessage.trim() === ""}
         >
           Send
         </button>

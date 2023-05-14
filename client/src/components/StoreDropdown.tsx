@@ -5,7 +5,6 @@ import { useAppState } from "../context/AppState.context";
 import { fetchStores } from "../api/storeService";
 import CustomSelect from "../blocks/CustomSelect";
 //@ts-ignore
-import Shop from "@iconscout/react-unicons/icons/uil-store";
 
 function StoreDropdown() {
   const [state, dispatch] = useAppState();
@@ -37,6 +36,7 @@ function StoreDropdown() {
       async function findNearestStore() {
         if (navigator.geolocation) {
           try {
+            setIsFindingNearestStore(true);
             const position: any = await getPosition();
 
             setGeoShared(true); // Set geoShared to true
@@ -133,16 +133,22 @@ function StoreDropdown() {
       options={storeOptions}
       onChange={handleSelectChange}
       isSearchable
-      placeholder="Velg butikk..."
+      placeholder={"Søk..."}
       className="w-fit-content"
       isLoading={storesIsLoading || isFindingNearestStore}
       triggerElement={
         <div className="flex flex-col">
-          <Shop
-            className={`h-8 w-8 rounded-full ${
+          <div
+            className={`flex h-8 w-fit min-w-[2rem] items-center justify-center rounded-full text-xs ${
               selectedStore ? "bg-orange-400" : "bg-gray-400"
             } p-2 text-white`}
-          />
+          >
+            {selectedStore
+              ? selectedStore.name.split(",").length > 1
+                ? selectedStore.name.split(",").slice(1).join(" ")
+                : selectedStore.name
+              : "Velg butikk"}
+          </div>
         </div>
       }
     />

@@ -103,8 +103,7 @@ export function createPromptForUserInputRecommendation(
 export function createSystemPromptForUserInputRecommendation(
   category: string,
   personality: string,
-  productList: string[],
-  inputText: string | any[]
+  productList: string[]
 ) {
   switch (personality) {
     case "expert":
@@ -135,5 +134,16 @@ export function createSystemPromptForUserInputRecommendation(
     ${productList}
     ---
     `;
+    case "no-products":
+      return `You are ChatGPT, a friendly AI language model specializing in alcoholic and non-alcoholic drinks. As an expert, you love sharing delightful recommendations, engaging conversations, and captivating stories with adults seeking your advice.
+
+      Now you must explaint to the user that you cant find any products in the category they asked for. Because they have not selected a local Vinmonopolet store.
+      It is important that you tell the user that they need to select a local Vinmonopolet store before you can recommend a product.
+
+      You can tell the user they find a button to select a local Vinmonopolet store in the top right corner of the screen.
+      `;
+    default: {
+      return;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, ChangeEventHandler } from "react";
+import { PuffLoader } from "react-spinners";
 import slugify from "slugify";
 
 interface Option {
@@ -83,11 +84,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   return (
     <div className={`${className}`} ref={dropdownRef}>
       <>
-        <div className="">
-          {React.cloneElement(triggerElement, {
-            onClick: () => setDropdownOpen(!isDropdownOpen),
-          })}
-        </div>
+        {isLoading ? (
+          <PuffLoader color="white" size={35} />
+        ) : (
+          <div className="">
+            {React.cloneElement(triggerElement, {
+              onClick: () => setDropdownOpen(!isDropdownOpen),
+            })}
+          </div>
+        )}
       </>
 
       {hasHits && options.length > 0 && isDropdownOpen && (
