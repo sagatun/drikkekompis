@@ -44,6 +44,11 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
 
   const { selectedStore, personality } = state;
 
+  const localSelectedStore = localStorage.getItem("selectedStore");
+
+  const hasSelectedStore =
+    Boolean(localSelectedStore) || Boolean(selectedStore);
+
   const { data: productsInStore } = useQuery({
     queryKey: ["fetchProductsInStore", selectedStore?.id],
     enabled: Boolean(selectedStore),
@@ -73,7 +78,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
           payload: [
             {
               role: "assistant",
-              content: getChatIntroduction(storedPersonality),
+              content: getChatIntroduction(storedPersonality, hasSelectedStore),
             },
           ],
         });
@@ -86,7 +91,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
           payload: [
             {
               role: "assistant",
-              content: getChatIntroduction(personality),
+              content: getChatIntroduction(personality, hasSelectedStore),
             },
           ],
         });

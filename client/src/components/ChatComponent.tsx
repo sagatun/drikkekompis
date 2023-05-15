@@ -10,6 +10,7 @@ import { SelectProductsModal } from "./SelectProductsModal.js";
 
 interface ChatComponentProps {
   products?: Product[];
+  disabled?: boolean;
   handleSendMessage?: () => void;
   inputMessage?: string;
   isLoading?: boolean;
@@ -20,6 +21,7 @@ interface ChatComponentProps {
 
 export default function ChatComponent({
   products = [],
+  disabled = false,
   handleSendMessage = () => {},
   inputMessage = "",
   isLoading = false,
@@ -62,7 +64,10 @@ export default function ChatComponent({
 
   return (
     <>
-      <div ref={messagesContainerRef} className="overflow-y-auto">
+      <div
+        ref={messagesContainerRef}
+        className="flex h-full flex-col overflow-y-auto overflow-x-hidden p-4"
+      >
         {messages &&
           messages.length > 0 &&
           messages
@@ -106,11 +111,13 @@ export default function ChatComponent({
             value={selectedProducts.length}
           />
           <input
+            autoFocus
             type="text"
+            placeholder="Aa"
             className="flex flex-grow rounded-lg border-2 border-gray-300 p-2"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+            // onKeyDown={(e) => e.key === "Enter" && handleSendMessage()} //  disable to check if input gets better on mobile
             style={{
               transition: "margin 0.3s ease-in-out",
               marginLeft: inputMessage.length > 0 ? "-2rem" : "1rem",
@@ -123,7 +130,7 @@ export default function ChatComponent({
             inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
           }`}
           onClick={handleSendMessage}
-          disabled={inputMessage.trim() === ""}
+          disabled={disabled}
         >
           Send
         </button>

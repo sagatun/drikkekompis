@@ -72,13 +72,7 @@ function useCategories(productsInStore: Product[]) {
 
     setCategories(categories);
     setSubCategories(subCategories);
-  }, [
-    productsInStore,
-    categorySynonyms,
-    subCategorySynonyms,
-    setCategories,
-    setSubCategories,
-  ]);
+  }, [productsInStore, setCategories, setSubCategories]);
 }
 
 export default useCategories;

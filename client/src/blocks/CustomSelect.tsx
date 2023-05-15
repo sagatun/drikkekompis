@@ -32,6 +32,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,6 +49,21 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    // New effect to scroll to the selected option when dropdown opens
+    if (isDropdownOpen) {
+      const selectedIndex = options.findIndex(
+        (option) => option.value === value
+      );
+      const selectedOptionRef = optionRefs.current[selectedIndex];
+
+      selectedOptionRef?.scrollIntoView({
+        block: "center",
+        inline: "start",
+      });
+    }
+  }, [isDropdownOpen, options, value]);
 
   const handleOptionSelect = (optionValue: string) => {
     setDropdownOpen(false);
@@ -94,19 +110,33 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           </div>
         )}
       </>
-
+      {isDropdownOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0,0,0,0.5)", // Semi-transparent black
+            zIndex: 9, // Ensure this is below the dropdown but above everything else
+          }}
+          onClick={() => setDropdownOpen(false)} // Close dropdown when backdrop is clicked
+        />
+      )}
       {hasHits && options.length > 0 && isDropdownOpen && (
         <div
           style={{
             width: "calc(100vw - 2rem)",
-            zIndex: 10,
+            zIndex: "10",
+            maxHeight: "40vh",
           }}
-          className="absolute right-4 mt-2 h-fit  max-h-[70vh] overflow-auto rounded bg-gray-100 p-2 shadow-lg"
+          className="absolute right-4 mt-2 overflow-auto rounded bg-gray-100 p-2 shadow-lg"
         >
           {isSearchable && (
             <input
               autoFocus
-              className="mb-4 w-full cursor-text rounded  bg-white px-2 py-2 text-gray-800 "
+              className="sticky -left-2 -right-2 -top-2 mb-4 w-full cursor-text rounded bg-white  px-2 py-2 text-gray-800 shadow-md "
               value={searchTerm}
               onFocus={handleSearchFocus}
               onBlur={handleSearchBlur}
@@ -122,7 +152,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             aria-activedescendant={value}
             tabIndex={0}
           >
-            {filteredOptions.map((option) => (
+            {filteredOptions.map((option, index) => (
               <li
                 key={option.value}
                 onClick={() => handleOptionSelect(option.value)}
@@ -133,6 +163,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 }`}
                 role="option"
                 aria-selected={value === option.value}
+                ref={(el) => (optionRefs.current[index] = el)} // New line
               >
                 {option.label}
               </li>

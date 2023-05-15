@@ -28,12 +28,16 @@ export async function getOpenaiInstance() {
 export async function chatGPTProductConversationHandler({
   openaiInstance,
   conversationHistory,
+  chatGPTModel = "gpt-3.5-turbo", // "gpt-4",
+  temperature = 0.9,
 }) {
+  console.log({ chatGPTModel, temperature });
+
   try {
     const response = await openaiInstance.createChatCompletion({
-      model: "gpt-3.5-turbo", // "gpt-4",
+      model: chatGPTModel,
       messages: conversationHistory,
-      temperature: 0.9,
+      temperature: temperature,
     });
 
     const updatedConversationHistory = [

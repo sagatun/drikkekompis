@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createSystemPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
-import { useMutation } from "@tanstack/react-query";
+import { useIsFetching, useMutation } from "@tanstack/react-query";
 import { Product } from "../../types";
 import {
   findCategoryInInputText,
@@ -18,6 +18,11 @@ export default function RecommendationFromUserInput() {
   const [state, dispatch] = useAppState();
   const [previousCategory, setPreviousCategory] = useState("");
   const [GPTProductList, setGPTProductList] = useState<string[]>([""]);
+  const [persona, setPersona] = useState("no-products");
+
+  const productsIsFetching = useIsFetching({
+    queryKey: ["fetchProductsInStore"],
+  });
 
   const {
     categories,
@@ -108,11 +113,15 @@ export default function RecommendationFromUserInput() {
 
     setGPTProductList(randomizedAndCappedProducts);
 
-    const persona = productsInStore.length > 0 ? personality : "no-products";
+    let p = "no-products";
+    if (productsInStore.length > 0) {
+      p = personality;
+      setPersona(p);
+    }
 
     const prompt = createSystemPromptForUserInputRecommendation(
       category,
-      persona,
+      p,
       randomizedAndCappedProducts
     );
 
@@ -134,8 +143,19 @@ export default function RecommendationFromUserInput() {
     const categoryFound =
       findCategoryInInputText(inputMessage, categories, subCategories) ?? "";
     setInputMessage("");
-
-    if (categoryFound || messages.length === 1) {
+    console.log({ categoryFound });
+    console.log(messages.length === 1);
+    console.log(persona === "no-products" && productsInStore.length > 0);
+    console.log(
+      categoryFound ||
+        messages.length === 1 ||
+        (persona === "no-products" && productsInStore.length > 0)
+    );
+    if (
+      categoryFound ||
+      messages.length === 1 ||
+      (persona === "no-products" && productsInStore.length > 0)
+    ) {
       const updatedProductList =
         previousCategory !== categoryFound || messages.length === 1
           ? updateProductListOnCategoryChange(inputMessage)
@@ -155,7 +175,10 @@ export default function RecommendationFromUserInput() {
         ];
 
         setMessages(updatedMessages);
-        const packageForChatGPT = { conversationHistory: updatedMessages };
+        const packageForChatGPT = {
+          conversationHistory: updatedMessages,
+          // chatGPTModel: "gpt-4",
+        };
         chatGPTMutation.mutate(packageForChatGPT);
         return;
       }
@@ -167,13 +190,17 @@ export default function RecommendationFromUserInput() {
     ];
 
     setMessages(updatedMessages);
-    const packageForChatGPT = { conversationHistory: updatedMessages };
+    const packageForChatGPT = {
+      conversationHistory: updatedMessages,
+      // chatGPTModel: "gpt-4",
+    };
     chatGPTMutation.mutate(packageForChatGPT);
   };
 
   return (
     <ChatComponent
       products={recommendedProducts}
+      disabled={inputMessage.trim() === "" || productsIsFetching > 0}
       handleSendMessage={handleSendMessage}
       inputMessage={inputMessage}
       isLoading={chatGPTMutation.isLoading}

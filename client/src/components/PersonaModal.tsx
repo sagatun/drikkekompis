@@ -41,7 +41,7 @@ export default function PersonaModal() {
 
   return (
     <>
-      <button className={"flex flex-col"} onClick={openModal}>
+      <button className={"cursor-pointer"} onClick={openModal}>
         <img
           loading="lazy"
           src={getPersonalityImgUrl(personality)}

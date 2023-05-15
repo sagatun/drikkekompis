@@ -1,10 +1,13 @@
 import React, { useCallback } from "react";
+import { useIsFetching } from "@tanstack/react-query";
 import { useAppState } from "../context/AppState.context";
 import { ClipLoader } from "react-spinners";
 
 function ViewButtons() {
   const [state, dispatch] = useAppState();
-
+  const productsIsFetching = useIsFetching({
+    queryKey: ["fetchProductsInStore"],
+  });
   const { productsInStore, view, selectedStore } = state;
 
   const setView = useCallback(
@@ -14,7 +17,8 @@ function ViewButtons() {
     [dispatch]
   );
 
-  const productsDisabled = !productsInStore || productsInStore.length === 0;
+  const productsDisabled =
+    !productsInStore || productsInStore.length === 0 || productsIsFetching > 0;
 
   function handleChangeView(view: string) {
     if (view === "chat") {

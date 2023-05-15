@@ -40,6 +40,20 @@ async function getTotalPages(page) {
   try {
     console.log("Getting total pages..." + page.url());
 
+    const noFiltersElement = await page.$(".section__refinement__message");
+
+    if (noFiltersElement) {
+      const textContent = await page.evaluate(
+        (element) => element.textContent.trim(),
+        noFiltersElement
+      );
+
+      if (textContent === "Ingen filtre for denne visningen") {
+        console.log("No filters for this view");
+        return -1;
+      }
+    }
+
     const paginationText = await page.$(".pagination-text");
 
     const textContent = paginationText
@@ -47,7 +61,6 @@ async function getTotalPages(page) {
       : null;
     console.log("Pagination text content:", textContent);
     if (textContent) {
-      const textContent = await paginationText.evaluate((el) => el.textContent);
       const totalPages = parseInt(textContent.match(/\d+$/)[0]);
       return totalPages;
     }
@@ -97,6 +110,8 @@ async function deleteOutdatedStores(firestore, storeIDs) {
     }
   });
 
+  console.log("deleteQueue", deleteQueue);
+
   let deleteCount = 0;
 
   while (deleteQueue.length > 0) {
@@ -142,13 +157,13 @@ async function scrapeStoreByCategory(browser, storeId, category) {
   });
 
   // Wait for a random time between 3 seconds and 6 seconds
-  await page.waitForTimeout(10000 + Math.floor(Math.random() * 2000));
+  await page.waitForTimeout(11000 + Math.floor(Math.random() * 3000));
 
   let response;
   try {
     response = await page.goto(initialUrl, {
       waitUntil: "networkidle2",
-      timeout: 120000, // Increase the timeout duration to 120 seconds
+      timeout: 8000, // Increase the timeout duration to 120 seconds
     });
 
     // Add this after the page loads
@@ -172,15 +187,20 @@ async function scrapeStoreByCategory(browser, storeId, category) {
     return {};
   }
 
+  let productIDsAndPricesFromAllPages = {};
+
   const totalPages = await getTotalPages(page);
+
+  if (totalPages === -1) {
+    console.log("No category content in this page");
+    return productIDsAndPricesFromAllPages;
+  }
 
   const randomizedTotalPagesArray = Array.from(Array(totalPages).keys()).sort(
     () => Math.random() - 0.5
   );
 
   console.log("Total pages", totalPages);
-
-  let categoryProductIds = {};
 
   for (const currentPage of randomizedTotalPagesArray) {
     const currentUrl = initialUrl.replace(
@@ -190,31 +210,31 @@ async function scrapeStoreByCategory(browser, storeId, category) {
 
     await page.waitForTimeout(11000 + Math.floor(Math.random() * 3000));
 
-    await page.goto(currentUrl, { waitUntil: "networkidle2", timeout: 60000 });
+    await page.goto(currentUrl, { waitUntil: "networkidle2", timeout: 8000 });
 
     await page.waitForTimeout(1000 + Math.floor(Math.random() * 2000));
 
     await humanize(page);
 
-    const productIdsAndPricesFromCurrentPage =
+    const productIDsAndPricesFromCurrentPage =
       await extractProductIdsAndStockFromPage(page);
 
     // Check if there are any products on the current page
-    if (Object.keys(productIdsAndPricesFromCurrentPage).length === 0) {
+    if (Object.keys(productIDsAndPricesFromCurrentPage).length === 0) {
       console.log(
         `No products found on page ${currentPage} for store "${storeId}" and category "${category}". Stopping...`
       );
       break;
     }
 
-    categoryProductIds = {
-      ...categoryProductIds,
-      ...productIdsAndPricesFromCurrentPage,
+    productIDsAndPricesFromAllPages = {
+      ...productIDsAndPricesFromAllPages,
+      ...productIDsAndPricesFromCurrentPage,
     };
   }
 
   await page.close();
-  return categoryProductIds;
+  return productIDsAndPricesFromAllPages;
 }
 
 async function getStores() {
@@ -224,6 +244,8 @@ async function getStores() {
     // fetch the list of all store IDs
     const allStores = await fetchAllStores();
 
+    console.log("allStores", allStores.length);
+
     // fetch the list of already scraped stores, sorted by lastScraped timestamp
     const scrapedStoresSnapshot = await firestore
       .collection("storesTest")
@@ -231,15 +253,27 @@ async function getStores() {
       .orderBy("lastScraped")
       .get();
 
+    //TODO:
     const scrapedStores = scrapedStoresSnapshot.docs.map((doc) => doc.id);
 
-    // filter out the already scraped stores from allStoreIds
-    const newStores = allStores.filter(
-      (store) => !scrapedStores.includes(store.storeId)
+    console.log("scrapedStores", scrapedStores);
+
+    // get stores that have not been scraped with date stamp yet
+    // and randomize the order
+    const stores = allStores
+      .filter((store) => !scrapedStores.includes(store.storeId))
+      .sort(() => Math.random() - 0.5);
+
+    const recentlyScrapedStores = allStores.filter((store) =>
+      scrapedStores.includes(store.storeId)
     );
 
-    // return the combined list, with new stores coming first
-    return [...newStores, ...scrapedStores];
+    // create combined list, with new stores coming first
+    const combinedStores = [...stores, ...recentlyScrapedStores];
+
+    console.log("store-list length", combinedStores.length);
+
+    return combinedStores;
   } else {
     return ["163", "200"]; //["115", "200", "269", "368"];
   }
@@ -351,6 +385,7 @@ async function scrapeAllProductDataFromStores() {
   try {
     const stores = await getStores();
 
+    //randomize the order of stores
     const storeIDs = stores.map((store) => store.storeId);
 
     const firestore = await getFirestoreInstance();
@@ -378,19 +413,6 @@ async function scrapeAllProductDataFromStores() {
 
       const randomizedKATEGORIER = KATEGORIER.sort(() => Math.random() - 0.5);
 
-      const storeRef = firestore.collection("storesTest").doc(storeId);
-
-      await storeRef.set({ store_id: storeId });
-
-      const productsCollectionRef = storeRef.collection("products");
-
-      // Delete all documents in the products subcollection
-      const snapshot = await productsCollectionRef.get();
-
-      const deletionPromises = snapshot.docs.map((doc) => doc.ref.delete());
-
-      await Promise.all(deletionPromises);
-
       let products = {};
 
       for (let category of randomizedKATEGORIER) {
@@ -414,6 +436,19 @@ async function scrapeAllProductDataFromStores() {
           );
         }
       }
+
+      const storeRef = firestore.collection("storesTest").doc(storeId);
+
+      await storeRef.set({ store_id: storeId });
+
+      const productsCollectionRef = storeRef.collection("products");
+
+      // Delete all documents in the products subcollection
+      const snapshot = await productsCollectionRef.get();
+
+      const deletionPromises = snapshot.docs.map((doc) => doc.ref.delete());
+
+      await Promise.all(deletionPromises);
 
       const { Timestamp } = require("@google-cloud/firestore");
       let currentTimestamp = Timestamp.now();
