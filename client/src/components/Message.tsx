@@ -35,8 +35,6 @@ export function Message({ message, index, products }: MessageProps) {
       </React.Fragment>
     ));
 
-  console.log({ productsInMessage });
-
   return (
     <React.Fragment key={index}>
       {productsInMessage.length > 0 && (

@@ -33,6 +33,7 @@ export default function RecommendationFromUserInput() {
     selectedProducts,
     recommendedProducts,
     inputMessage,
+    chatGPTModel,
     messages,
   } = state;
 
@@ -49,8 +50,6 @@ export default function RecommendationFromUserInput() {
     // const names = filteredProducts.map((product: Product) => product.name);
 
     const namesFromResponse = getNamesFromResponse(rawContent, GPTProductList);
-
-    console.log("namesFromResponse: ", namesFromResponse);
 
     setMessages([
       ...messages,
@@ -109,7 +108,12 @@ export default function RecommendationFromUserInput() {
 
     const mappedProducts = products && convertProductList(products);
 
-    const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 120);
+    const listSizeLimit = chatGPTModel === "gpt-4" ? 200 : 100;
+
+    const randomizedAndCappedProducts = randomizeAndCap(
+      mappedProducts,
+      listSizeLimit
+    );
 
     setGPTProductList(randomizedAndCappedProducts);
 
@@ -143,14 +147,7 @@ export default function RecommendationFromUserInput() {
     const categoryFound =
       findCategoryInInputText(inputMessage, categories, subCategories) ?? "";
     setInputMessage("");
-    console.log({ categoryFound });
-    console.log(messages.length === 1);
-    console.log(persona === "no-products" && productsInStore.length > 0);
-    console.log(
-      categoryFound ||
-        messages.length === 1 ||
-        (persona === "no-products" && productsInStore.length > 0)
-    );
+
     if (
       categoryFound ||
       messages.length === 1 ||
@@ -192,7 +189,7 @@ export default function RecommendationFromUserInput() {
     setMessages(updatedMessages);
     const packageForChatGPT = {
       conversationHistory: updatedMessages,
-      // chatGPTModel: "gpt-4",
+      chatGPTModel: chatGPTModel,
     };
     chatGPTMutation.mutate(packageForChatGPT);
   };
