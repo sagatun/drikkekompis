@@ -4,10 +4,6 @@ import Modal from "react-modal";
 Modal.setAppElement("#root");
 
 const ProductModal = ({ isOpen, onRequestClose, product }: any) => {
-  if (!product) {
-    return;
-  }
-
   const [showLargeImage, setShowLargeImage] = useState(false);
 
   useEffect(() => {
@@ -48,35 +44,33 @@ const ProductModal = ({ isOpen, onRequestClose, product }: any) => {
 
   const primaryImage = images.find((image: any) => image.type === "PRIMARY");
 
+  if (!product) return <></>;
+
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="mx-auto mt-20 w-full max-w-2xl rounded-md border border-gray-300 bg-white px-4 py-6 shadow-lg"
+      className="mx-auto mt-20 max-w-2xl rounded-md border border-gray-300 bg-white px-4 py-6 shadow-lg"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-30"
     >
-      <div className="flex max-h-[60vh] flex-col overflow-y-auto md:flex-row">
-        <div className="flex w-full justify-center md:w-1/2">
+      <div className="flex flex-col overflow-y-auto">
+        <div className="flex justify-center">
           <img
             src={primaryImage.url}
             alt={name}
-            className="w24 mb-6 w-24 cursor-pointer md:mb-0"
+            className="mb-6 cursor-pointer"
             onClick={() => setShowLargeImage(true)}
           />
           {showLargeImage && (
             <div
-              className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-50"
+              className="flex items-center justify-center bg-black bg-opacity-50"
               onClick={() => setShowLargeImage(false)}
             >
-              <img
-                src={primaryImage.url}
-                alt={name}
-                className="max-h-full w-auto max-w-full"
-              />
+              <img src={primaryImage.url} alt={name} />
             </div>
           )}
         </div>
-        <div className="w-full md:w-1/2 md:pl-6">
+        <div>
           <h2 className="mb-2 text-2xl font-bold">{name}</h2>
           <p className="mb-4 text-gray-600">{productType}</p>
           <p className="mb-2">
@@ -149,7 +143,7 @@ const ProductModal = ({ isOpen, onRequestClose, product }: any) => {
             <strong>Wholesaler:</strong> {wholesaler}
           </p>
           <button
-            className="rounded bg-red-500 px-4 py-2 font-bold text-white"
+            className="rounded px-4 py-2 font-bold text-white"
             onClick={onRequestClose}
           >
             Close

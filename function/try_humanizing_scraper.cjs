@@ -18,58 +18,42 @@ const RESOURCE_TYPES_TO_BLOCK = [
 const scrapedProductToPlainObject = (product) =>
   JSON.parse(JSON.stringify(product));
 
-const KATEGORIER = [
-  "øl",
-  "rødvin",
-  "hvitvin",
-  "rosévin",
-  "brennevin",
-  "musserende_vin",
-  "sterkvin",
-  "perlende_vin",
-  "sider",
-  "aromatisert_vin",
-  "alkoholfritt",
-  "mjød",
-  "sake",
-  "fruktvin",
-  "øvrig_svakvin",
-];
-
-async function getTotalPages(page) {
-  try {
-    console.log("Getting total pages..." + page.url());
-
-    const noFiltersElement = await page.$(".section__refinement__message");
-
-    if (noFiltersElement) {
-      const textContent = await page.evaluate(
-        (element) => element.textContent.trim(),
-        noFiltersElement
-      );
-
-      if (textContent === "Ingen filtre for denne visningen") {
-        console.log("No filters for this view");
-        return -1;
-      }
-    }
-
-    const paginationText = await page.$(".pagination-text");
-
-    const textContent = paginationText
-      ? await paginationText.evaluate((el) => el.textContent)
-      : null;
-    console.log("Pagination text content:", textContent);
-    if (textContent) {
-      const totalPages = parseInt(textContent.match(/\d+$/)[0]);
-      return totalPages;
-    }
-    return 1;
-  } catch (error) {
-    console.error("Error in getTotalPages:", error);
-    return 1;
-  }
-}
+const KATEGORIER =
+  process.env.NODE_ENV === "production"
+    ? [
+        "øl",
+        "rødvin",
+        "hvitvin",
+        "rosévin",
+        "brennevin",
+        "musserende_vin",
+        "sterkvin",
+        "perlende_vin",
+        "sider",
+        "aromatisert_vin",
+        "alkoholfritt",
+        "mjød",
+        "sake",
+        "fruktvin",
+        "øvrig_svakvin",
+      ]
+    : [
+        "øl",
+        "rødvin",
+        "hvitvin",
+        "rosévin",
+        "brennevin",
+        "musserende_vin",
+        "sterkvin",
+        "perlende_vin",
+        "sider",
+        "aromatisert_vin",
+        "alkoholfritt",
+        "mjød",
+        "sake",
+        "fruktvin",
+        "øvrig_svakvin",
+      ];
 
 async function humanize(page) {
   // Random scrolling
@@ -100,6 +84,12 @@ async function newPageWithRandomUserAgent(browser) {
   return page;
 }
 
+async function randomMouseMove(page) {
+  let x = Math.floor(Math.random() * 1000);
+  let y = Math.floor(Math.random() * 1000);
+  await page.mouse.move(x, y);
+}
+
 async function deleteOutdatedStores(firestore, storeIDs) {
   const storesSnapshot = await firestore.collection("storesTest").get();
   const deleteQueue = [];
@@ -109,8 +99,6 @@ async function deleteOutdatedStores(firestore, storeIDs) {
       deleteQueue.push(doc.ref);
     }
   });
-
-  console.log("deleteQueue", deleteQueue);
 
   let deleteCount = 0;
 
@@ -145,6 +133,9 @@ async function scrapeStoreByCategory(browser, storeId, category) {
   const initialUrl = `https://www.vinmonopolet.no/search?q=:relevance:availableInStores:${storeId}:mainCategory:${category}&searchType=product&currentPage=0`;
 
   const page = await newPageWithRandomUserAgent(browser);
+  // await page.setUserAgent(
+  //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36"
+  // );
 
   await page.setRequestInterception(true);
 
@@ -157,18 +148,21 @@ async function scrapeStoreByCategory(browser, storeId, category) {
   });
 
   // Wait for a random time between 3 seconds and 6 seconds
-  await page.waitForTimeout(11000 + Math.floor(Math.random() * 3000));
+  await page.waitForTimeout(10000 + Math.floor(Math.random() * 13000));
 
   let response;
   try {
     response = await page.goto(initialUrl, {
       waitUntil: "networkidle2",
-      timeout: 8000, // Increase the timeout duration to 120 seconds
+      timeout: 120000, // Increase the timeout duration to 120 seconds
+    });
+
+    await page.waitForSelector('button[aria-label="Gå til forrige side"]', {
+      visible: true,
     });
 
     // Add this after the page loads
     await humanize(page);
-    await page.waitForTimeout(500 + Math.floor(Math.random() * 1000));
   } catch (error) {
     console.error(
       `Error navigating to initial URL for store "${storeId}" and category "${category}":`,
@@ -187,14 +181,7 @@ async function scrapeStoreByCategory(browser, storeId, category) {
     return {};
   }
 
-  let productIDsAndPricesFromAllPages = {};
-
   const totalPages = await getTotalPages(page);
-
-  if (totalPages === -1) {
-    console.log("No category content in this page");
-    return productIDsAndPricesFromAllPages;
-  }
 
   const randomizedTotalPagesArray = Array.from(Array(totalPages).keys()).sort(
     () => Math.random() - 0.5
@@ -202,80 +189,63 @@ async function scrapeStoreByCategory(browser, storeId, category) {
 
   console.log("Total pages", totalPages);
 
+  let categoryProductIds = {};
+
   for (const currentPage of randomizedTotalPagesArray) {
-    const currentUrl = initialUrl.replace(
-      /currentPage=\d+/,
-      `currentPage=${currentPage}`
-    );
+    // const currentUrl = initialUrl.replace(
+    //   /currentPage=\d+/,
+    //   `currentPage=${currentPage}`
+    // );
 
-    await page.waitForTimeout(11000 + Math.floor(Math.random() * 3000));
+    // Wait for a random time between 3 seconds and 6 seconds
+    await page.waitForTimeout(10000 + Math.floor(Math.random() * 13000));
 
-    await page.goto(currentUrl, { waitUntil: "networkidle2", timeout: 8000 });
+    // await page.goto(currentUrl, { waitUntil: "networkidle2", timeout: 60000 });
 
-    await page.waitForTimeout(1000 + Math.floor(Math.random() * 2000));
-
+    // Add this after the page loads
     await humanize(page);
 
-    const productIDsAndPricesFromCurrentPage =
+    const productIdsAndPricesFromCurrentPage =
       await extractProductIdsAndStockFromPage(page);
 
     // Check if there are any products on the current page
-    if (Object.keys(productIDsAndPricesFromCurrentPage).length === 0) {
+    if (Object.keys(productIdsAndPricesFromCurrentPage).length === 0) {
       console.log(
         `No products found on page ${currentPage} for store "${storeId}" and category "${category}". Stopping...`
       );
       break;
     }
 
-    productIDsAndPricesFromAllPages = {
-      ...productIDsAndPricesFromAllPages,
-      ...productIDsAndPricesFromCurrentPage,
+    categoryProductIds = {
+      ...categoryProductIds,
+      ...productIdsAndPricesFromCurrentPage,
     };
+
+    // Click the next page button
+    // Use try-catch block to handle error when there's no next page
+    try {
+      await page.click('button[aria-label="Gå til forrige side"]');
+      await page.waitForNavigation({
+        waitUntil: "networkidle2",
+        timeout: 60000,
+      });
+    } catch (error) {
+      console.error(`Failed to navigate to the next page: ${error}`);
+      break; // exit the loop if cannot navigate to the next page
+    }
   }
 
   await page.close();
-  return productIDsAndPricesFromAllPages;
+  return categoryProductIds;
 }
 
-async function getStores() {
-  if (true) {
-    const firestore = await getFirestoreInstance();
-
-    // fetch the list of all store IDs
-    const allStores = await fetchAllStores();
-
-    console.log("allStores", allStores.length);
-
-    // fetch the list of already scraped stores, sorted by lastScraped timestamp
-    const scrapedStoresSnapshot = await firestore
-      .collection("storesTest")
-      .where("lastScraped", "!=", null)
-      .orderBy("lastScraped")
-      .get();
-
-    //TODO:
-    const scrapedStores = scrapedStoresSnapshot.docs.map((doc) => doc.id);
-
-    console.log("scrapedStores", scrapedStores);
-
-    // get stores that have not been scraped with date stamp yet
-    // and randomize the order
-    const stores = allStores
-      .filter((store) => !scrapedStores.includes(store.storeId))
-      .sort(() => Math.random() - 0.5);
-
-    const recentlyScrapedStores = allStores.filter((store) =>
-      scrapedStores.includes(store.storeId)
-    );
-
-    // create combined list, with new stores coming first
-    const combinedStores = [...stores, ...recentlyScrapedStores];
-
-    console.log("store-list length", combinedStores.length);
-
-    return combinedStores;
+async function getStoreIDs() {
+  if (process.env.NODE_ENV === "production") {
+    const storesRes = await fetchAllStores();
+    const storeIds = storesRes.map((store) => store.storeId);
+    return storeIds.sort(() => Math.random() - 0.5); // randomize the order of the array
   } else {
-    return ["163", "200"]; //["115", "200", "269", "368"];
+    return ["200"]; //["115", "200", "269", "368"];
   }
 }
 async function fetchAllStores() {
@@ -345,8 +315,8 @@ async function extractProductIdsAndStockFromPage(page, maxRetries = 3) {
           for (let key in scrapedData) {
             const productData = productsData.find((item) => item.code == key);
             combinedProductData[key] = {
-              ...productData,
               ...scrapedData[key],
+              ...productData,
             };
           }
 
@@ -372,115 +342,114 @@ async function extractProductIdsAndStockFromPage(page, maxRetries = 3) {
   return {};
 }
 
-async function scrapeAllProductDataFromStores() {
-  const startTime = Date.now();
+async function getTotalPages(page) {
+  try {
+    console.log("Getting total pages...");
 
+    const paginationText = await page.$(".pagination-text");
+
+    const textContent = paginationText
+      ? await paginationText.evaluate((el) => el.textContent)
+      : null;
+    console.log("Pagination text content:", textContent);
+    if (textContent) {
+      const textContent = await paginationText.evaluate((el) => el.textContent);
+      const totalPages = parseInt(textContent.match(/\d+$/)[0]);
+      return totalPages;
+    }
+    return 1;
+  } catch (error) {
+    console.error("Error in getTotalPages:", error);
+    return 1;
+  }
+}
+
+async function scrapeAllProductDataFromStores() {
   const browser = await puppeteer.launch({
-    headless: "true",
+    headless: true,
+
     executablePath: chromiumPath,
     timeout: 0,
     args: ["--disable-setuid-sandbox", "--no-sandbox"],
   });
 
   try {
-    const stores = await getStores();
-
-    //randomize the order of stores
-    const storeIDs = stores.map((store) => store.storeId);
-
+    const storeIDs = await getStoreIDs();
+    const storeIDsChunks = chunkArray(storeIDs, 5);
     const firestore = await getFirestoreInstance();
 
     // Delete outdated stores
     await deleteOutdatedStores(firestore, storeIDs);
 
-    let counter = 0;
+    const allProductsCollectionRef = firestore.collection("allProducts");
+    const allProductsSnapshot = await allProductsCollectionRef.get();
+    const existingProducts = new Set(
+      allProductsSnapshot.docs.map((doc) => doc.data().code)
+    );
 
-    for (let storeId of storeIDs) {
-      console.log(
-        "Starting with store",
-        storeId,
-        "... Store + " + counter++ + " of " + storeIDs.length + " stores"
-      );
+    for (const storeIDsChunk of storeIDsChunks) {
+      console.log("Scraping stores chunk...", storeIDsChunk);
 
-      // time elapsed in milliseconds
-      const timeElapsed = Date.now() - startTime;
+      for (let storeId of storeIDsChunk) {
+        const randomizedKATEGORIER = KATEGORIER.sort(() => Math.random() - 0.5);
 
-      // Convert to hours, minutes, and seconds
-      const hours = Math.floor(timeElapsed / 1000 / 60 / 60);
-      const minutes = Math.floor((timeElapsed / 1000 / 60) % 60);
+        for (let category of randomizedKATEGORIER) {
+          try {
+            // const delay = Math.floor(Math.random() * 5000) + 1000; // random delay between 1-6 seconds
+            // await new Promise((resolve) => setTimeout(resolve, delay)); // wait for the random delay
+            const products = await scrapeStoreByCategory(
+              browser,
+              storeId,
+              category
+            );
 
-      console.log(`Time elapsed: ${hours} hour(s), ${minutes} minute(s)`);
+            console.log("Done with store", storeId, "and category", category);
 
-      const randomizedKATEGORIER = KATEGORIER.sort(() => Math.random() - 0.5);
+            if (Object.keys(products).length > 0) {
+              const storeRef = firestore.collection("storesTest").doc(storeId);
 
-      let products = {};
+              await storeRef.set({ store_id: storeId });
 
-      for (let category of randomizedKATEGORIER) {
-        try {
-          const delay = Math.floor(Math.random() * 1000) + 10000; // random delay between 1-6 seconds
-          await new Promise((resolve) => setTimeout(resolve, delay)); // wait for the random delay
-          const categoryProducts = await scrapeStoreByCategory(
-            browser,
-            storeId,
-            category
-          );
+              const productsCollectionRef = storeRef.collection("products");
 
-          console.log("Done with store", storeId, "and category", category);
+              const productEntries = Object.entries(products);
 
-          // Merge the products from this category with the products from the previous categories
-          products = { ...products, ...categoryProducts };
-        } catch (error) {
-          console.error(
-            `Error scraping category "${category}" for store "${storeId}":`,
-            error
-          );
+              // Split the productEntries into smaller chunks of at most 500
+              const productChunks = chunkArray(productEntries, 500);
+
+              for (const productChunk of productChunks) {
+                const batch = firestore.batch();
+
+                productChunk.forEach(([productId, product]) => {
+                  if (!existingProducts.has(productId)) {
+                    const productRef = productsCollectionRef.doc(productId);
+                    batch.set(productRef, scrapedProductToPlainObject(product));
+                    existingProducts.add(productId);
+
+                    // Add product to allProducts collection
+                    const allProductsRef =
+                      allProductsCollectionRef.doc(productId);
+                    batch.set(
+                      allProductsRef,
+                      scrapedProductToPlainObject(product)
+                    );
+                  }
+                });
+
+                await batch.commit();
+              }
+            }
+          } catch (error) {
+            console.error(
+              `Error scraping category "${category}" for store "${storeId}":`,
+              error
+            );
+          }
         }
+        console.log("Done with store", storeId);
       }
-
-      const storeRef = firestore.collection("storesTest").doc(storeId);
-
-      await storeRef.set({ store_id: storeId });
-
-      const productsCollectionRef = storeRef.collection("products");
-
-      // Delete all documents in the products subcollection
-      const snapshot = await productsCollectionRef.get();
-
-      const deletionPromises = snapshot.docs.map((doc) => doc.ref.delete());
-
-      await Promise.all(deletionPromises);
-
-      const { Timestamp } = require("@google-cloud/firestore");
-      let currentTimestamp = Timestamp.now();
-
-      if (Object.keys(products).length > 0) {
-        const storeRef = firestore.collection("storesTest").doc(storeId);
-
-        await storeRef.set({
-          store_id: storeId,
-          lastScraped: currentTimestamp,
-        });
-
-        const productsCollectionRef = storeRef.collection("products");
-
-        const productEntries = Object.entries(products);
-
-        // Split the productEntries into smaller chunks of at most 500
-        const productChunks = chunkArray(productEntries, 500);
-
-        for (const productChunk of productChunks) {
-          const batch = firestore.batch();
-
-          productChunk.forEach(([productId, product]) => {
-            const productRef = productsCollectionRef.doc(productId);
-            batch.set(productRef, scrapedProductToPlainObject(product));
-          });
-
-          await batch.commit();
-        }
-      }
-
-      console.log("Done with store", storeId);
+      // Add a delay between each chunk if needed (in milliseconds)
+      // await new Promise((resolve) => setTimeout(resolve, 5000));
     }
   } catch (error) {
     console.log("Error scraping all stores : " + error);

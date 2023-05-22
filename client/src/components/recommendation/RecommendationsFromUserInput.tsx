@@ -1,20 +1,28 @@
-import { createPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
-import { useMutation } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { createSystemPromptForUserInputRecommendation } from "../../utils/chatGPT-prompts";
+import { useIsFetching, useMutation } from "@tanstack/react-query";
 import { Product } from "../../types";
 import {
   findCategoryInInputText,
   randomizeAndCap,
   filterProductsByCategory,
-  extractJsonFromText,
-  getContentFromResponse,
   convertProductList,
+  getNamesFromResponse,
 } from "../../utils/recommendationsUtils";
 import ChatComponent from "../ChatComponent";
 import { chatGPTConversation } from "../../api/chatGPT";
-import { useAppState } from "../../context/AppStateContext";
+import { useAppState } from "../../context/AppState.context";
+import slugify from "slugify";
 
 export default function RecommendationFromUserInput() {
   const [state, dispatch] = useAppState();
+  const [previousCategory, setPreviousCategory] = useState("");
+  const [GPTProductList, setGPTProductList] = useState<string[]>([""]);
+  const [persona, setPersona] = useState("no-products");
+
+  const productsIsFetching = useIsFetching({
+    queryKey: ["fetchProductsInStore"],
+  });
 
   const {
     categories,
@@ -23,13 +31,14 @@ export default function RecommendationFromUserInput() {
     productsInStore,
     selectedCategory,
     selectedProducts,
-    recommendedProduct,
+    recommendedProducts,
     inputMessage,
+    chatGPTModel,
     messages,
   } = state;
 
-  const setRecommendedProduct = (product: Product | null) =>
-    dispatch({ type: "SET_RECOMMENDED_PRODUCT", payload: product });
+  const setRecommendedProducts = (products: Product[] | []) =>
+    dispatch({ type: "SET_RECOMMENDED_PRODUCTS", payload: products });
   const setInputMessage = (message: string) =>
     dispatch({ type: "SET_INPUT_MESSAGE", payload: message });
   const setMessages = (newMessages: any[]) =>
@@ -37,36 +46,42 @@ export default function RecommendationFromUserInput() {
 
   function handleChatGPTResponse(response: any) {
     const rawContent = response.conversationHistory.pop().content;
-    const content = getContentFromResponse(rawContent);
+
+    // const names = filteredProducts.map((product: Product) => product.name);
+
+    const namesFromResponse = getNamesFromResponse(rawContent, GPTProductList);
 
     setMessages([
       ...messages,
       {
         role: "assistant",
-        content: content || "Error: Unable to parse content",
+        content: response.conversationText || "Error: Unable to parse content",
       },
     ]);
 
-    const parsedJson = extractJsonFromText(rawContent);
-    if (parsedJson && parsedJson.i) {
-      const recommendedProduct: Product | undefined = productsInStore.find(
-        (product: Product) => product.code === parsedJson.i
-      );
-      if (recommendedProduct) {
-        setRecommendedProduct(recommendedProduct);
-      }
+    const foundProducts = productsInStore.filter((product: Product) =>
+      [...namesFromResponse].includes(
+        slugify(product.name, { lower: true, strict: true })
+      )
+    );
+
+    if (foundProducts) {
+      const updatedRecommendedProducts = [
+        ...recommendedProducts,
+        ...foundProducts,
+      ];
+
+      setRecommendedProducts(updatedRecommendedProducts);
     }
   }
 
-  function prepareChatGPTPackage(inputText: string) {
+  function updateProductListOnCategoryChange(inputText: string) {
     if (inputText.length === 0) return;
 
     const categoryFromUserInput =
       findCategoryInInputText(inputText, categories, subCategories) ?? "";
 
-    console.log("categoryFromUserInput", categoryFromUserInput);
-
-    const filteredProductsByCategory = categoryFromUserInput
+    const filtered_products = categoryFromUserInput
       ? filterProductsByCategory(
           productsInStore,
           categoryFromUserInput,
@@ -82,32 +97,39 @@ export default function RecommendationFromUserInput() {
 
     const category: string =
       categoryFromUserInput ||
-      (selectedCategory && selectedCategory.label) ||
-      "product";
+      (selectedCategory && selectedCategory.name) ||
+      "products";
 
     const products = Boolean(selectedProducts.length)
       ? selectedProducts
-      : filteredProductsByCategory && Boolean(filteredProductsByCategory.length)
-      ? filteredProductsByCategory
+      : filtered_products && Boolean(filtered_products.length)
+      ? filtered_products
       : productsInStore;
 
     const mappedProducts = products && convertProductList(products);
 
-    const randomizedAndCappedProducts = randomizeAndCap(mappedProducts, 50);
+    const listSizeLimit = chatGPTModel === "gpt-4" ? 200 : 100;
 
-    console.log("randomizedAndCappedProducts", randomizedAndCappedProducts);
-
-    const prompt = createPromptForUserInputRecommendation(
-      category,
-      personality,
-      randomizedAndCappedProducts,
-      inputText
+    const randomizedAndCappedProducts = randomizeAndCap(
+      mappedProducts,
+      listSizeLimit
     );
 
-    const conversationHistory = [
-      { role: "assistant", content: prompt },
-      { role: "user", content: inputText },
-    ];
+    setGPTProductList(randomizedAndCappedProducts);
+
+    let p = "no-products";
+    if (productsInStore.length > 0) {
+      p = personality;
+      setPersona(p);
+    }
+
+    const prompt = createSystemPromptForUserInputRecommendation(
+      category,
+      p,
+      randomizedAndCappedProducts
+    );
+
+    const conversationHistory = [{ role: "system", content: prompt }];
 
     return conversationHistory;
   }
@@ -122,28 +144,68 @@ export default function RecommendationFromUserInput() {
   });
 
   const handleSendMessage = () => {
-    const preparedMessage = prepareChatGPTPackage(inputMessage);
-    if (messages.length === 1 && preparedMessage) {
-      setInputMessage("");
-      setMessages([...messages, preparedMessage[1]]);
-      const packageForChatGPT = { conversationHistory: preparedMessage };
-      chatGPTMutation.mutate(packageForChatGPT);
-      return;
+    const categoryFound =
+      findCategoryInInputText(inputMessage, categories, subCategories) ?? "";
+    setInputMessage("");
+
+    if (
+      categoryFound ||
+      messages.length === 1 ||
+      (persona === "no-products" && productsInStore.length > 0)
+    ) {
+      const updatedProductList =
+        previousCategory !== categoryFound || messages.length === 1
+          ? updateProductListOnCategoryChange(inputMessage)
+          : [];
+
+      // Update the previousCategory state
+      setPreviousCategory(categoryFound);
+
+      if (updatedProductList && updatedProductList?.length > 0) {
+        const filteredMessages = messages.filter(
+          (message) => message.role !== "system"
+        );
+        const updatedMessages = [
+          ...updatedProductList,
+          ...filteredMessages,
+          { content: inputMessage, role: "user" },
+        ];
+
+        setMessages(updatedMessages);
+        const packageForChatGPT = {
+          conversationHistory: updatedMessages,
+          chatGPTModel: chatGPTModel,
+        };
+        try {
+          chatGPTMutation.mutate(packageForChatGPT);
+        } catch (e) {
+          console.error(e);
+        }
+        return;
+      }
     }
+
     const updatedMessages = [
       ...messages,
       { content: inputMessage, role: "user" },
     ];
-    setInputMessage("");
-    setMessages(updatedMessages);
 
-    const packageForChatGPT = { conversationHistory: updatedMessages };
-    chatGPTMutation.mutate(packageForChatGPT);
+    setMessages(updatedMessages);
+    const packageForChatGPT = {
+      conversationHistory: updatedMessages,
+      chatGPTModel: chatGPTModel,
+    };
+    try {
+      chatGPTMutation.mutate(packageForChatGPT);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
     <ChatComponent
-      product={recommendedProduct}
+      products={recommendedProducts}
+      disabled={inputMessage.trim() === "" || productsIsFetching > 0}
       handleSendMessage={handleSendMessage}
       inputMessage={inputMessage}
       isLoading={chatGPTMutation.isLoading}

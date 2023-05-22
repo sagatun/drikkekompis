@@ -1,6 +1,6 @@
 // useMainPage.ts
 import { useCallback } from "react";
-import { useAppState } from "../context/AppStateContext";
+import { useAppState } from "../context/AppState.context";
 import {
   categorySynonyms,
   subCategorySynonyms,

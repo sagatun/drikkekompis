@@ -13,6 +13,9 @@ export default {
         "chat-blue": "#0084ff",
         "chat-gray": "#f0f0f0",
       },
+      gridTemplateRows: {
+        layout: "auto 1fr auto",
+      },
     },
     backgroundImage: {
       drikkekompisLogo: "url('./Header/DrikkekompisLogo1.png')",

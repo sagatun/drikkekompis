@@ -9,7 +9,7 @@ import CommentAlt from "@iconscout/react-unicons/icons/uil-comment-alt";
 import CheckMark from "@iconscout/react-unicons/icons/uil-check";
 
 interface Props {
-  product: Product;
+  product: Product | undefined;
   isSelected?: boolean;
   toggleSelectHandler?: any;
 }
@@ -19,39 +19,8 @@ export default function ProductCard({
   isSelected,
   toggleSelectHandler,
 }: Props) {
-  const [systemPrompt, setSystemPrompt] = React.useState<any>(null);
-  const [showChatModal, setShowChatModal] = React.useState(false);
-
-  useEffect(() => {
-    async function createSystemPrompt() {
-      if (product) {
-        const systemPrompt = createSystemPromptForProductConversation(product);
-        setSystemPrompt(systemPrompt);
-      }
-    }
-    createSystemPrompt();
-  }, [product]);
-
-  function openModal() {
-    document.body.classList.add("modal-open");
-    setShowChatModal(true);
-  }
-
-  function closeModal() {
-    document.body.classList.remove("modal-open");
-    setShowChatModal(false);
-  }
-
   return (
     <>
-      {Boolean(systemPrompt) && (
-        <ChatModal
-          isOpen={showChatModal}
-          onRequestClose={closeModal}
-          systemPrompt={systemPrompt}
-          product={product}
-        />
-      )}
       <div
         className={`flex w-full cursor-pointer flex-col justify-between rounded-md border shadow-md transition duration-200 ease-in-out hover:shadow-lg ${
           isSelected ? "bg-white opacity-50" : "bg-white"
@@ -60,7 +29,11 @@ export default function ProductCard({
         <div className="relative">
           <img
             className="max-h-40 w-full rounded-t-md object-cover pt-12"
-            src={product?.images.length > 0 ? product?.images[2].url : ""}
+            src={
+              product && product.images && product?.images.length > 0
+                ? product?.images[2].url
+                : ""
+            }
             alt={product?.name}
             style={{ objectFit: "contain" }}
           />
@@ -94,10 +67,7 @@ export default function ProductCard({
             <div className="text-xl font-bold">{product?.price} kr</div>
 
             {!!toggleSelectHandler && (
-              <button
-                onClick={openModal}
-                className="flex gap-2 rounded-md bg-gray-900 px-2 py-2 text-white transition duration-200 ease-in-out hover:bg-gray-800"
-              >
+              <button className="flex gap-2 rounded-md bg-gray-900 px-2 py-2 text-white transition duration-200 ease-in-out hover:bg-gray-800">
                 <CommentAlt size="16" className="text-2xl" />
               </button>
             )}

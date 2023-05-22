@@ -62,3 +62,11 @@ export async function fetchAllStores() {
     throw new Error("Error fetching stores: " + error);
   }
 }
+
+export async function fetchAllProducts() {
+  try {
+    console.log("Fetching all products");
+  } catch (e) {
+    console.error(e);
+  }
+}

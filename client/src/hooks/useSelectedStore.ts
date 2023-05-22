@@ -1,4 +1,4 @@
-import { useAppState } from "../context/AppStateContext";
+import { useAppState } from "../context/AppState.context";
 
 export const useSelectedStore = () => {
   const [state, dispatch] = useAppState();

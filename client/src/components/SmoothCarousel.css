@@ -1,0 +1,13 @@
+.swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 18px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.swiper {
+  max-width: 240px;
+  height: fit-content;
+}

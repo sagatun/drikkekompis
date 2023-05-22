@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useReducer } from "react";
 import { AppState, AppStateActions } from "../types";
-import { appStateReducer } from "../reducers/AppState.reducer";
+import { appStateReducer } from "./AppState.reducer";
 import { getChatIntroduction } from "../utils/getChatIntroduction";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -16,8 +16,10 @@ const initialState: AppState = {
   selectedProducts: [],
   productsInStore: [],
   personality: "",
-  recommendedProduct: null,
+  recommendedProducts: [],
+  view: "chat",
   inputMessage: "",
+  chatGPTModel: "gpt-3.5-turbo",
   messages: [
     {
       role: "assistant",
@@ -43,11 +45,15 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
 
   const { selectedStore, personality } = state;
 
-  const {
-    data: productsInStore,
-    isLoading: isFetchProductsInStoreLoading,
-    isError: isFetchProductsInStoreError,
-  } = useQuery({
+  const localSelectedStore = localStorage.getItem("chatGPTModel");
+
+  const localChatGPTModel: "gpt-3.5-turbo" | "gpt-4" | string | null =
+    localStorage.getItem("chatGPTModel");
+
+  const hasSelectedStore =
+    Boolean(localSelectedStore) || Boolean(selectedStore);
+
+  const { data: productsInStore } = useQuery({
     queryKey: ["fetchProductsInStore", selectedStore?.id],
     enabled: Boolean(selectedStore),
     queryFn: async () => {
@@ -66,6 +72,15 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
   }, [productsInStore]);
 
   useEffect(() => {
+    if (localChatGPTModel) {
+      dispatch({
+        type: "SET_CHAT_GPT_MODEL",
+        payload: localChatGPTModel as "gpt-3.5-turbo" | "gpt-4",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     const loadPersonality = async () => {
       const storedPersonality: string =
         localStorage.getItem("personality") ?? "";
@@ -76,22 +91,20 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
           payload: [
             {
               role: "assistant",
-              content: getChatIntroduction(storedPersonality),
+              content: getChatIntroduction(storedPersonality, hasSelectedStore),
             },
           ],
         });
       } else {
-        const personalities = ["rapper", "expert", "sarcastic"];
-        const randomPersonality =
-          personalities[Math.floor(Math.random() * personalities.length)];
-        localStorage.setItem("personality", randomPersonality);
-        dispatch({ type: "SET_PERSONALITY", payload: randomPersonality });
+        const personality = "expert";
+        localStorage.setItem("personality", personality);
+        dispatch({ type: "SET_PERSONALITY", payload: personality });
         dispatch({
           type: "SET_MESSAGES",
           payload: [
             {
               role: "assistant",
-              content: getChatIntroduction(randomPersonality),
+              content: getChatIntroduction(personality, hasSelectedStore),
             },
           ],
         });
@@ -99,6 +112,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
     };
     loadPersonality();
   }, [personality]);
+
   return (
     <AppStateContext.Provider value={[state, dispatch]}>
       {children}
