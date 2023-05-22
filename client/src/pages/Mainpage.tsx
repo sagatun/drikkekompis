@@ -67,7 +67,7 @@ export default function Mainpage() {
             bottom: "0px",
             overflowY: "auto",
           }}
-          className="chat-container mx-auto flex w-full max-w-[600px] flex-col justify-end bg-gray-600 px-4"
+          className="chat-container mx-auto flex w-full max-w-[600px] flex-col justify-end bg-gray-600 pl-4"
         >
           {renderRecommendationFromUserInput()}
         </div>

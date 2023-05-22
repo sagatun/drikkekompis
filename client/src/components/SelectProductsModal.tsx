@@ -44,8 +44,8 @@ export function SelectProductsModal({ value, ...props }: Props) {
         ariaHideApp={false}
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        className="relative  inset-0 min-h-full bg-gray-600 p-4"
-        overlayClassName={"overflow-auto   inset-0 fixed"}
+        className="fixed inset-0 z-10 bg-gray-600"
+        overlayClassName={"overflow-auto z-10 inset-0 fixed"}
       >
         <div className={"flex flex-col"}>
           <button

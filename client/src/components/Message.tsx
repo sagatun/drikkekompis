@@ -44,7 +44,7 @@ export function Message({ message, index, products }: MessageProps) {
       )}
       <div
         className={`my-2 flex ${
-          message.role === "user" ? "justify-end" : "justify-start"
+          message.role === "user" ? "justify-end pr-4" : "justify-start"
         }`}
       >
         {message.role === "assistant" && (

@@ -23,33 +23,46 @@ export function ChatInput(props: IChatInputProps) {
     return inputMessage.length > 0
       ? {
           opacity: 0,
-          transition: "opacity 0.3s ease-in-out",
+          transition: "opacity 0.1s ease-in-out",
           pointerEvents: "none",
         }
       : {
           opacity: 1,
-          transition: "opacity 0.3s ease-in-out",
+          transition: "opacity 0.7s ease-in-out",
           pointerEvents: "all",
         };
   }
+
   return (
-    <div className="flex h-16 justify-between pb-4 pt-2">
-      <div className="relative flex flex-grow">
+    <div className="flex h-16 justify-between pb-4 pr-4 pt-2">
+      <div className="relative flex flex-grow" style={{ minHeight: "40px" }}>
         <SelectProductsModal
           style={getSelectProductsStyle()}
           value={selectedProducts.length}
         />
-        <input
+        <textarea
           autoFocus
-          type="text"
           placeholder="Aa"
-          className="flex flex-grow rounded-lg border-2 border-gray-300 p-2"
+          className=" flex flex-grow rounded-lg border-2 border-gray-300 p-2 leading-tight placeholder:leading-tight"
           value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSendMessage()} //  disable to check if input gets better on mobile
+          onChange={(e) => {
+            setInputMessage(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
           style={{
-            transition: "margin 0.3s ease-in-out",
-            marginLeft: inputMessage.length > 0 ? "-2rem" : "1rem",
+            transition: "left 0.3s ease-in-out, height 0.3s ease-in-out",
+            left: inputMessage.length > 0 ? "0rem" : "3rem",
+            right: "0",
+            position: "absolute",
+            bottom: 0,
+            resize: "none",
+            overflow: "hidden",
+            height: "40px",
           }}
         />
       </div>
