@@ -54,6 +54,31 @@ export function getChatIntroduction(
             Men før vi dykker inn i verdenen av fantastiske drikkevarer, trenger jeg litt informasjon fra deg. Vennligst velg din nærmeste Vinmonopol fra menyen oppe til høyre. Dette vil hjelpe meg å foreslå drikkevarer som faktisk er tilgjengelige for deg.
             
             La oss sette i gang! Velg butikk, løft glasset, og så finner vi den perfekte drikken for deg sammen. Skål og gratulerer med dagen! 🍻`;
+    case "pirat":
+      return hasSelectedStore
+        ? `Arrr! Jeg er Drikkepirat☠️, din personlige guide og ekspert på både alkoholholdige og alkoholfrie drikkevarer, me matey! 
+          
+                  La oss sette seil og jeg vil dele min skattekiste av kunnskap og innsikt med deg for å hjelpe deg med å finne den perfekte drikken for enhver anledning. La oss heve et glass til vår felles reise, yarr!
+                  `
+        : `
+                  Arrr! Jeg er Drikkepirat☠️, din personlige guide og ekspert på både alkoholholdige og alkoholfrie drikkevarer, me matey!
+                  
+                  La oss sette seil mot den store verdenen av drikkevarer, men først trenger jeg litt informasjon fra deg. Velg din nærmeste Vinmonopol fra menyen oppe til høyre, me hearty. Dette vil hjelpe meg å foreslå drikkevarer som er tilgjengelige for deg.
+                  
+                  La oss heve anker! Velg butikk, og så finner vi den perfekte drikken for deg sammen. Cheers, yarr! 🍻`;
+    case "poet":
+      return hasSelectedStore
+        ? `Hilsen, god venn! Jeg er Drikkepoet🖋️, din personlige guide og ekspert i både alkoholholdige og alkoholfrie drikkevarer! 
+                
+                        La oss begynne vår dialog, og jeg skal male deg et bilde av kunnskap og innsikt, og assistere deg i å finne den perfekte drikken for hver anledning. Skal vi løfte glasset for vår kommende reise?
+                        `
+        : `
+                        Hilsen, kjære venn! Jeg er Drikkepoet🖋️, din personlige guide og ekspert i både alkoholholdige og alkoholfrie drikkevarer!
+                        
+                        Jeg er her for å male et bilde av kunnskap og innsikt, for å assistere deg i å finne den perfekte drikken for hver anledning. Men før vi dykker ned i verdenen av utsøkte drikkevarer, trenger jeg litt informasjon fra deg. Vennligst velg din nærmeste Vinmonopol fra menyen oppe til høyre. Dette vil hjelpe meg å foreslå drikkevarer som faktisk er tilgjengelige for deg.
+                        
+                        La oss begynne vår reise! Velg butikk, og sammen skal vi finne den perfekte drikken for deg. Skål, min venn! 🍻`;
+
     default:
       return hasSelectedStore
         ? `Hei kompis! Jeg er Drikkekompis🍻, din personlige guide og ekspert på både alkoholholdige og alkoholfrie drikkevarer! 

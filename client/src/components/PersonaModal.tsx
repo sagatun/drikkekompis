@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import CustomSelect from "../blocks/CustomSelect.js";
 import Modal from "react-modal";
 import { useAppState } from "../context/AppState.context.js";
 import { getPersonalityImgUrl } from "../utils/helpers.js";
@@ -31,30 +30,26 @@ const personalityOptions = [
     value: "rapper",
     label: "DrikkeGkompiZ",
   },
-  // {
-  //   imageUrl: "personas/sarkastisk192.png",
-  //   description: "ja",
-  //   value: "sarcastic",
-  //   label: "DrikkeIronisk",
-  // },
-  // {
-  //   imageUrl: "personas/pirat192.png",
-  //   description: "nei",
-  //   value: "pirat",
-  //   label: "Pirat",
-  // },
-  // {
-  //   imageUrl: "personas/poet192.png",
-  //   description: "kanskje",
-  //   value: "poet",
-  //   label: "Poet",
-  // },
   {
     gptModel: "gpt-3.5-turbo",
-    imageUrl: "personas/17mai192.png",
-    description: `17. mai" er en AI-språkmodell inspirert av Norges nasjonaldag. Den deler kunnskap om drikkevarer gjennom dikt eller sanger, med rytme og rim som minner om norske nasjonalsanger, alltid med en festlig 17. mai-stemning.`,
-    value: "17mai",
-    label: "17-Mai",
+    imageUrl: "personas/sarkastisk192.png",
+    description: `DrikkeIronisk er en AI-språkmodell med en sarkastisk persona. Den formidler sin kunnskap om drikkevarer med en skarp tunge og en bitende vidd, men gir alltid verdifull informasjon - selv om det er pakket inn i en dose ironi.`,
+    value: "sarcastic",
+    label: "DrikkeIronisk",
+  },
+  {
+    gptModel: "gpt-3.5-turbo",
+    imageUrl: "personas/pirat192.png",
+    description: `Sjøsprøyt er en AI-språkmodell med en pirat-persona. Den formidler sin omfattende kunnskap om drikkevarer gjennom munter sjargong og ekstravagante havfortellinger, alltid med en god porsjon eventyrlyst.`,
+    value: "pirat",
+    label: "Sjøsprøyt",
+  },
+  {
+    gptModel: "gpt-3.5-turbo",
+    imageUrl: "personas/poet192.png",
+    description: `Poeten er en AI-språkmodell som formidler sin kunnskap om drikkevarer gjennom poetisk prosa. Dens anbefalinger er ikke bare informerende, men er også omsvøpt i vakre og tankevekkende vers.`,
+    value: "poet",
+    label: "Poeten",
   },
   {
     gptModel: "gpt-4",
@@ -70,30 +65,26 @@ const personalityOptions = [
     value: "rapper",
     label: "DrikkeGkompiZ",
   },
-  // {
-  //   imageUrl: "personas/sarkastisk192.png",
-  //   description: "ja",
-  //   value: "sarcastic",
-  //   label: "DrikkeIronisk",
-  // },
-  // {
-  //   imageUrl: "personas/pirat192.png",
-  //   description: "nei",
-  //   value: "pirat",
-  //   label: "Pirat",
-  // },
-  // {
-  //   imageUrl: "personas/poet192.png",
-  //   description: "kanskje",
-  //   value: "poet",
-  //   label: "Poet",
-  // },
   {
     gptModel: "gpt-4",
-    imageUrl: "personas/17mai192.png",
-    description: `"17. mai" er en AI-språkmodell inspirert av Norges nasjonaldag. Drevet av GPT-4, denne modellen deler kunnskap om drikkevarer gjennom dikt eller sanger, med rytme og rim som minner om norske nasjonalsanger. Selv om responser kan være litt tregere på grunn av den avanserte modellen, gir den mer nøyaktige og kreative svar, noe som skaper en autentisk 17. mai-stemning.`,
-    value: "17mai",
-    label: "17-Mai",
+    imageUrl: "personas/sarkastisk192.png",
+    description: `DrikkeIronisk, drevet av GPT-4, tar sarkasme til et nytt nivå med enda mer presise og vittige kommentarer. Selv om responstiden kan være litt tregere, er anbefalingene mer innsiktsfulle og skarpe, noe som gjør DrikkeIronisk til en ideell samtalepartner for de som setter pris på en litt tørr humor.`,
+    value: "sarcastic",
+    label: "DrikkeIronisk",
+  },
+  {
+    gptModel: "gpt-4",
+    imageUrl: "personas/pirat192.png",
+    description: `Sjøsprøyt, drevet av GPT-4, tar piratpersonligheten til et nytt nivå med enda mer detaljerte og levende fortellinger. Selv om responsene kan ta litt tid, er de fullpakket med fargerike beskrivelser og eventyrlige anbefalinger, noe som gir en unik og engasjerende opplevelse.`,
+    value: "pirat",
+    label: "Sjøsprøyt",
+  },
+  {
+    gptModel: "gpt-4",
+    imageUrl: "personas/poet192.png",
+    description: `Poeten, drevet av GPT-4, tar poesi til et nytt nivå med enda mer detaljerte og raffinerte vers. Selv om responstiden kan være litt tregere, er anbefalingene mer dyptgående og tankevekkende, noe som gjør Poeten til en ideell samtalepartner for de som søker en berikende opplevelse.`,
+    value: "poet",
+    label: "Poeten",
   },
 ];
 
@@ -101,6 +92,8 @@ export default function PersonaModal() {
   const [state, dispatch] = useAppState();
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const { personality, chatGPTModel } = state;
+
+  console.log("chatGPTModel", chatGPTModel);
 
   const setPersonality = (personality: string) => {
     localStorage.setItem("personality", personality);
@@ -110,6 +103,7 @@ export default function PersonaModal() {
   };
 
   const setChatGPTModel = (chatGPTModel: "gpt-3.5-turbo" | "gpt-4") => {
+    console.log("setChatGPTModel", chatGPTModel);
     localStorage.setItem("chatGPTModel", chatGPTModel);
     dispatch({ type: "SET_CHAT_GPT_MODEL", payload: chatGPTModel });
   };
@@ -147,10 +141,13 @@ export default function PersonaModal() {
         ariaHideApp={false}
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
-        className="fixed inset-0  z-10  bg-gray-600"
+        className="fixed inset-0 z-10 bg-gray-600"
+        overlayClassName={"overflow-auto z-10 inset-0 fixed"}
       >
         <div
-          className={"m-auto flex flex-col items-center justify-center  p-4"}
+          className={
+            "m-auto flex h-full flex-col items-center justify-between p-4"
+          }
         >
           <div className={"flex w-full justify-between"}>
             <div>
@@ -195,20 +192,25 @@ export default function PersonaModal() {
               }}
               pagination={true}
               modules={[EffectCoverflow, Pagination]}
+              style={{ height: "100%" }}
               className="mySwiper"
             >
               {filteredPersonalityOptions.map((persona) => (
                 <SwiperSlide
                   key={persona.value}
-                  className="flex flex-col items-center justify-center gap-12"
+                  className="flex flex-col items-center justify-start gap-12"
                   onClick={() => setModalIsOpen(false)}
                 >
-                  <div className="flex flex-col items-center justify-center gap-12">
-                    <h2>{persona.label}</h2>
-                    <div className="rounded-full bg-white">
+                  <div className="flex flex-col items-center justify-between gap-12  text-gray-200">
+                    <h2 className=" text-3xl">{persona.label}</h2>
+                    <div className="rounded-full bg-gray-200">
                       <img src={persona.imageUrl} alt={persona.label}></img>
                     </div>
-                    <div className={" text-center  text-xs font-light"}>
+                    <div
+                      className={
+                        " text-center text-sm font-light text-gray-200"
+                      }
+                    >
                       {persona.description}
                     </div>
                   </div>

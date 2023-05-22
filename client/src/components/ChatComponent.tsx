@@ -7,6 +7,7 @@ import { Message } from "./Message";
 // @ts-ignore
 import Redo from "@iconscout/react-unicons/icons/uil-redo";
 import { SelectProductsModal } from "./SelectProductsModal.js";
+import { ChatInput } from "./ChatInput.js";
 
 interface ChatComponentProps {
   products?: Product[];
@@ -48,25 +49,11 @@ export default function ChatComponent({
     }
   }, [messages]);
 
-  function getSelectProductsStyle() {
-    return inputMessage.length > 0
-      ? {
-          opacity: 0,
-          transition: "opacity 0.3s ease-in-out",
-          pointerEvents: "none",
-        }
-      : {
-          opacity: 1,
-          transition: "opacity 0.3s ease-in-out",
-          pointerEvents: "all",
-        };
-  }
-
   return (
     <>
       <div
         ref={messagesContainerRef}
-        className="flex h-full flex-col overflow-y-auto overflow-x-hidden p-4"
+        className="flex flex-col overflow-y-auto overflow-x-hidden py-4"
       >
         {messages &&
           messages.length > 0 &&
@@ -104,37 +91,13 @@ export default function ChatComponent({
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex justify-between py-4">
-        <div className="relative flex flex-grow">
-          <SelectProductsModal
-            style={getSelectProductsStyle()}
-            value={selectedProducts.length}
-          />
-          <input
-            autoFocus
-            type="text"
-            placeholder="Aa"
-            className="flex flex-grow rounded-lg border-2 border-gray-300 p-2"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            // onKeyDown={(e) => e.key === "Enter" && handleSendMessage()} //  disable to check if input gets better on mobile
-            style={{
-              transition: "margin 0.3s ease-in-out",
-              marginLeft: inputMessage.length > 0 ? "-2rem" : "1rem",
-            }}
-          />
-        </div>
-
-        <button
-          className={`ml-4 rounded-lg bg-chat-blue px-4 py-2 font-bold text-white ${
-            inputMessage.trim() === "" ? "cursor-not-allowed opacity-50" : ""
-          }`}
-          onClick={handleSendMessage}
-          disabled={disabled}
-        >
-          Send
-        </button>
-      </div>
+      <ChatInput
+        inputMessage={inputMessage}
+        setInputMessage={setInputMessage}
+        handleSendMessage={handleSendMessage}
+        disabled={disabled}
+        selectedProducts={selectedProducts}
+      />
     </>
   );
 }

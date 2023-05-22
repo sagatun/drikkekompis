@@ -42,11 +42,11 @@ export async function chatGPTProductConversationHandler({
 
     const updatedConversationHistory = [
       ...conversationHistory,
-      response.data.choices[0].message,
+      response?.data?.choices[0].message,
     ];
 
     return {
-      conversationText: response.data.choices[0]?.message?.content,
+      conversationText: response?.data?.choices[0]?.message?.content,
       conversationHistory: updatedConversationHistory,
     };
   } catch (error) {

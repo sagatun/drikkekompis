@@ -4,8 +4,8 @@ import StoreDropdown from "../StoreDropdown.js";
 
 function Header() {
   return (
-    <header className="w-full rounded-bl-lg rounded-br-lg bg-gray-800 text-white shadow-md">
-      <div className="items-top mx-auto flex  max-w-[600px] justify-between p-4">
+    <header className="h-full rounded-bl-lg rounded-br-lg bg-gray-800 px-4 text-white shadow-md">
+      <div className="items-top mx-auto flex h-full  max-w-[600px] items-center justify-between ">
         <h1 className="text-start font-bangers text-3xl sm:text-5xl">
           Drikkekompis🍻
         </h1>

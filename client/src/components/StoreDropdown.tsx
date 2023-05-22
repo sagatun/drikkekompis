@@ -181,7 +181,7 @@ function StoreDropdown() {
       triggerElement={
         <div className="flex flex-col">
           <button
-            className={`flex h-8 w-fit min-w-[2rem] items-center justify-center rounded-full text-xs ${
+            className={`flex h-8 items-center justify-center rounded-full text-xs ${
               selectedStore ? "bg-orange-400" : "bg-gray-400"
             } p-2 text-white`}
           >

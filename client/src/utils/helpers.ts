@@ -16,15 +16,18 @@ export function convertProductList(
 }
 
 export function getPersonalityImgUrl(personality: string) {
-  if (personality === "expert") {
-    return "/personas/expert192.png";
-  } else if (personality === "rapper") {
-    return "/personas/gangsta192.png";
-  } else if (personality === "sarcastic") {
-    return "/personas/sarkastisk192.png";
-  } else if (personality === "17mai") {
-    return "/personas/17mai192.png";
-  } else {
-    return "/personas/expert192.png";
+  switch (personality) {
+    case "expert":
+      return "/personas/expert192.png";
+    case "rapper":
+      return "/personas/gangsta192.png";
+    case "sarcastic":
+      return "/personas/sarkastisk192.png";
+    case "pirat":
+      return "/personas/pirat192.png";
+    case "poet":
+      return "/personas/poet192.png";
+    default:
+      return "/personas/expert192.png";
   }
 }

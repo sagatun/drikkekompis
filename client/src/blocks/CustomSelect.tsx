@@ -98,7 +98,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   const hasHits = filteredOptions.length > 0;
 
   return (
-    <div className={`${className}`} ref={dropdownRef}>
+    <div className={className} ref={dropdownRef}>
       <>
         {isLoading ? (
           <PuffLoader color="white" size={35} />
@@ -163,7 +163,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
                 }`}
                 role="option"
                 aria-selected={value === option.value}
-                ref={(el) => (optionRefs.current[index] = el)} // New line
+                ref={(el) => (optionRefs.current[index] = el)}
               >
                 {option.label}
               </li>

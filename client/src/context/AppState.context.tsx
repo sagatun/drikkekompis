@@ -96,7 +96,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
           ],
         });
       } else {
-        const personality = "17mai";
+        const personality = "expert";
         localStorage.setItem("personality", personality);
         dispatch({ type: "SET_PERSONALITY", payload: personality });
         dispatch({

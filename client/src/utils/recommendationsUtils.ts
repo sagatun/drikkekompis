@@ -97,18 +97,31 @@ export function getNamesFromResponse(rawContent: string, names: string[]) {
   // Slugify rawContent
   const slugifiedContent = slugify(rawContent, { lower: true, strict: true });
 
-  // Slugify names, escape special characters, and create a regex pattern with word boundaries and case-insensitive flag
+  // Slugify names, escape special characters
   const slugifiedNames = names.map((name) =>
     escapeRegExp(slugify(name, { lower: true, strict: true }))
   );
-  const pattern = new RegExp(
-    `(?<=^|\\s|[^\\w])(${slugifiedNames.join("|")})(?=$|\\s|[^\\w])`,
-    "gi"
-  );
 
-  // Find all names in slugifiedContent using regex pattern
-  const matchedNames = slugifiedContent.match(pattern);
-  if (matchedNames) {
+  // Find all names in slugifiedContent using individual regex for each pattern
+  const matchedNames: string[] = [];
+  slugifiedNames.forEach((name) => {
+    const pattern = new RegExp(`(${name})`, "gi");
+    let match;
+    while ((match = pattern.exec(slugifiedContent)) !== null) {
+      // Check if the character before and after the match are word characters
+      // If they are, this means that the match is part of a larger word, and we should skip it
+      const beforeChar = slugifiedContent[match.index - 1];
+      const afterChar = slugifiedContent[match.index + match[0].length];
+      if (
+        (beforeChar === undefined || !/\w/.test(beforeChar)) &&
+        (afterChar === undefined || !/\w/.test(afterChar))
+      ) {
+        matchedNames.push(match[0]);
+      }
+    }
+  });
+
+  if (matchedNames.length > 0) {
     // Create a Set to remove duplicates, then convert it back to an array
     const uniqueMatchedNames = Array.from(new Set(matchedNames));
     return uniqueMatchedNames;

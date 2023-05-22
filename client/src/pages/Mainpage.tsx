@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import { ProductTable } from "../components/table/ProductTable.js";
 import RecommendationFromUserInput from "../components/recommendation/RecommendationsFromUserInput";
 import Header from "../components/header/Header";
@@ -13,43 +13,6 @@ export default function Mainpage() {
   const [state] = useAppState();
 
   const { productsInStore, view } = state;
-
-  const headerContainerRef = useRef<HTMLDivElement>(null);
-  const buttonContainerRef = useRef<HTMLDivElement>(null);
-  const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (
-        headerContainerRef.current &&
-        buttonContainerRef.current &&
-        chatContainerRef.current
-      ) {
-        const windowHeight = window.innerHeight;
-        const headerContainerHeight = headerContainerRef.current.offsetHeight;
-        const buttonContainerHeight = buttonContainerRef.current.offsetHeight;
-        const chatContainerMaxHeight =
-          windowHeight - headerContainerHeight - buttonContainerHeight;
-        chatContainerRef.current.style.height = `${
-          chatContainerMaxHeight - 8
-        }px`;
-        chatContainerRef.current.style.maxHeight = `${
-          chatContainerMaxHeight - 8
-        }px`;
-      }
-    };
-
-    // Kjør resize-håndteringsfunksjonen når komponenten er montert
-    handleResize();
-
-    // Lytt etter endringer i vindusstørrelsen
-    window.addEventListener("resize", handleResize);
-
-    // Fjern event listener når komponenten er demontert
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [headerContainerRef, buttonContainerRef, chatContainerRef, view]);
 
   // Map categories
   useCategories(productsInStore);
@@ -88,27 +51,29 @@ export default function Mainpage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[100vh] flex-col  bg-gray-600 ">
-      <div className="header-container" ref={headerContainerRef}>
+    <div className="mx-auto flex h-screen flex-col items-center  bg-gray-600 ">
+      <div className="header-container h-16 w-full">
         <Header />
       </div>
-      <div
-        className="button-container mx-auto w-full max-w-[600px]   px-4 py-8"
-        ref={buttonContainerRef}
-      >
+      <div className="button-container mx-auto flex h-16 w-full max-w-[600px] items-center justify-start px-4">
         <ViewButtons />
         {/* <MovableChatBubble /> */}
       </div>
       {view === "chat" && (
         <div
-          className="chat-container mx-auto  flex h-full max-w-[600px] flex-col justify-end px-4"
-          ref={chatContainerRef}
+          style={{
+            position: "absolute",
+            top: "128px",
+            bottom: "0px",
+            overflowY: "auto",
+          }}
+          className="chat-container mx-auto flex w-full max-w-[600px] flex-col justify-end bg-gray-600 px-4"
         >
           {renderRecommendationFromUserInput()}
         </div>
       )}
       {view === "products" && (
-        <div className="products-container mx-auto  flex h-full flex-col justify-between px-4">
+        <div className="products-container mx-auto flex max-w-[600px] flex-col justify-between px-4">
           {renderProductTable()}
         </div>
       )}

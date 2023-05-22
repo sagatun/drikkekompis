@@ -38,12 +38,12 @@ export function Message({ message, index, products }: MessageProps) {
   return (
     <React.Fragment key={index}>
       {productsInMessage.length > 0 && (
-        <div className="  mb-2 mt-12 flex items-start justify-start">
+        <div className="mb-2 mt-12 flex items-start justify-start">
           <SmoothCarousel products={productsInMessage} />
         </div>
       )}
       <div
-        className={`my-2 flex  ${
+        className={`my-2 flex ${
           message.role === "user" ? "justify-end" : "justify-start"
         }`}
       >
@@ -55,7 +55,7 @@ export function Message({ message, index, products }: MessageProps) {
           />
         )}
         <div
-          className={`rounded-lg px-4 py-2 ${
+          className={`h-fit max-w-[75%] rounded-lg px-4 py-2 ${
             message.role === "user"
               ? "bg-chat-blue text-white"
               : "bg-chat-gray text-black"

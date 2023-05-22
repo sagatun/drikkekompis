@@ -84,7 +84,7 @@ export function SelectProductsModal({ value, ...props }: Props) {
                   "m-4 rounded-xl bg-orange-400 p-2  hover:bg-orange-200"
                 }
               >
-                + Trykk her for å legge til produkter
+                + Trykk her for å legge til produkter (WIP)
               </button>
             </div>
           )}

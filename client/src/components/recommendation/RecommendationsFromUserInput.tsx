@@ -174,9 +174,13 @@ export default function RecommendationFromUserInput() {
         setMessages(updatedMessages);
         const packageForChatGPT = {
           conversationHistory: updatedMessages,
-          // chatGPTModel: "gpt-4",
+          chatGPTModel: chatGPTModel,
         };
-        chatGPTMutation.mutate(packageForChatGPT);
+        try {
+          chatGPTMutation.mutate(packageForChatGPT);
+        } catch (e) {
+          console.error(e);
+        }
         return;
       }
     }
@@ -191,7 +195,11 @@ export default function RecommendationFromUserInput() {
       conversationHistory: updatedMessages,
       chatGPTModel: chatGPTModel,
     };
-    chatGPTMutation.mutate(packageForChatGPT);
+    try {
+      chatGPTMutation.mutate(packageForChatGPT);
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (

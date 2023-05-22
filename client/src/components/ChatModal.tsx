@@ -55,19 +55,19 @@ La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å 
     <Modal
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="fixed mx-auto h-full w-full max-w-2xl  overflow-hidden rounded-md border-none bg-white shadow-lg"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-30"
+      className="mx-auto overflow-hidden rounded-md border-none bg-white shadow-lg"
+      overlayClassName="bg-black bg-opacity-50"
     >
       <button
         className={
-          "absolute right-4 top-4 rounded bg-gray-400 px-4 py-2 font-bold text-white shadow-md transition duration-200 hover:bg-gray-500"
+          "rounded bg-gray-400 px-4 py-2 font-bold text-white shadow-md transition duration-200 hover:bg-gray-500"
         }
         onClick={onRequestClose}
       >
         X
       </button>
 
-      <div className="m-auto flex h-full w-full flex-col overflow-y-auto md:flex-row">
+      <div className="m-auto flex flex-col overflow-y-auto md:flex-row">
         <ChatComponent
           messages={messages}
           product={product}
