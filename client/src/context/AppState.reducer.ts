@@ -22,8 +22,6 @@ export function appStateReducer(
       return { ...state, personality: action.payload };
     case "SET_RECOMMENDED_PRODUCTS":
       return { ...state, recommendedProducts: action.payload };
-    case "SET_INPUT_MESSAGE":
-      return { ...state, inputMessage: action.payload };
     case "SET_CHAT_GPT_MODEL":
       return { ...state, chatGPTModel: action.payload };
     case "SET_MESSAGES":

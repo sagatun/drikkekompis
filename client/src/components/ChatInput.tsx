@@ -43,7 +43,7 @@ export function ChatInput(props: IChatInputProps) {
         <textarea
           autoFocus
           placeholder="Aa"
-          className=" flex flex-grow rounded-lg border-2 border-gray-300 p-2 leading-tight placeholder:leading-tight"
+          className="absolute flex h-10 flex-grow resize-none overflow-hidden rounded-lg border-2 border-gray-300 p-2 leading-tight transition-all duration-300 placeholder:leading-tight"
           value={inputMessage}
           onChange={(e) => {
             setInputMessage(e.target.value);
@@ -55,14 +55,9 @@ export function ChatInput(props: IChatInputProps) {
             }
           }}
           style={{
-            transition: "left 0.3s ease-in-out, height 0.3s ease-in-out",
             left: inputMessage.length > 0 ? "0rem" : "3rem",
             right: "0",
-            position: "absolute",
             bottom: 0,
-            resize: "none",
-            overflow: "hidden",
-            height: "40px",
           }}
         />
       </div>

@@ -19,6 +19,7 @@ export default function RecommendationFromUserInput() {
   const [previousCategory, setPreviousCategory] = useState("");
   const [GPTProductList, setGPTProductList] = useState<string[]>([""]);
   const [persona, setPersona] = useState("no-products");
+  const [inputMessage, setInputMessage] = useState("");
 
   const productsIsFetching = useIsFetching({
     queryKey: ["fetchProductsInStore"],
@@ -32,15 +33,12 @@ export default function RecommendationFromUserInput() {
     selectedCategory,
     selectedProducts,
     recommendedProducts,
-    inputMessage,
+
     chatGPTModel,
     messages,
   } = state;
-
   const setRecommendedProducts = (products: Product[] | []) =>
     dispatch({ type: "SET_RECOMMENDED_PRODUCTS", payload: products });
-  const setInputMessage = (message: string) =>
-    dispatch({ type: "SET_INPUT_MESSAGE", payload: message });
   const setMessages = (newMessages: any[]) =>
     dispatch({ type: "SET_MESSAGES", payload: newMessages });
 

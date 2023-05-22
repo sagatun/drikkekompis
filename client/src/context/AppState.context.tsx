@@ -18,7 +18,6 @@ const initialState: AppState = {
   personality: "",
   recommendedProducts: [],
   view: "chat",
-  inputMessage: "",
   chatGPTModel: "gpt-3.5-turbo",
   messages: [
     {
