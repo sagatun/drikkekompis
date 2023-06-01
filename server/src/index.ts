@@ -11,11 +11,11 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://client-bdwsmnrktq-lz.a.run.app",
+      "https://client-bdwsmnrktq-lz.a.run.app", //torn sin
+      "https://client-wyqxm5q4yq-lz.a.run.app", // kompis på personlig gcloug
       "http://localhost:3000",
       "https://drikkekompis.eu",
       "https://www.drikkekompis.eu",
-      "https://client-service-bdwsmnrktq-lz.a.run.app/", //test url
       "http://localhost:8025", //test url
       "https://dev.torn.no", //test url
     ],

@@ -6,11 +6,11 @@ on:
       - main
 
 env:
-  PROJECT_ID: eriks-playground-378311
+  PROJECT_ID: drikkekompis
   CLIENT_SERVICE: client-service
   SERVER_SERVICE: server-service
-  CLIENT_IMAGE: gcr.io/eriks-playground-378311/client
-  SERVER_IMAGE: gcr.io/eriks-playground-378311/server
+  CLIENT_IMAGE: gcr.io/drikkekompis/client
+  SERVER_IMAGE: gcr.io/drikkekompis/server
   REGION: europe-north1
   PLATFORM: managed
 

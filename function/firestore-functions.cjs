@@ -5,7 +5,7 @@ let firestoreInstance;
 const serviceAccount =
   process.env.NODE_ENV === "production"
     ? null
-    : require("./eriks-playground-firestore-test.json");
+    : require("./drikkekompis-firestore-test.json");
 
 // Rest of the code remains the same
 

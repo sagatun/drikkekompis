@@ -41,6 +41,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
   children,
 }) => {
   const [state, dispatch] = useReducer(appStateReducer, initialState);
+  const [hasSelectedStore, setHasSelectedStore] = React.useState(false);
 
   const { selectedStore, personality } = state;
 
@@ -49,8 +50,9 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
   const localChatGPTModel: "gpt-3.5-turbo" | "gpt-4" | string | null =
     localStorage.getItem("chatGPTModel");
 
-  const hasSelectedStore =
-    Boolean(localSelectedStore) || Boolean(selectedStore);
+  useEffect(() => {
+    setHasSelectedStore(Boolean(localSelectedStore) || Boolean(selectedStore));
+  }, [localSelectedStore, selectedStore]);
 
   const { data: productsInStore } = useQuery({
     queryKey: ["fetchProductsInStore", selectedStore?.id],
@@ -110,7 +112,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
       }
     };
     loadPersonality();
-  }, [personality]);
+  }, [personality, hasSelectedStore]);
 
   return (
     <AppStateContext.Provider value={[state, dispatch]}>

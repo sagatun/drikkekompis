@@ -8,8 +8,9 @@ export async function fetchAllProductsInStore(storeId) {
   if (storeProductsCache[storeId]) {
     return storeProductsCache[storeId];
   }
+
   const firestore = await getFirestoreInstance();
-  const storeRef = firestore?.collection("storesTest")?.doc(storeId);
+  const storeRef = firestore?.collection("stores")?.doc(storeId);
 
   const productsCollectionRef = storeRef.collection("products");
   const productsSnapshot = await productsCollectionRef.get();

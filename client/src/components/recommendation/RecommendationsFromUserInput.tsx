@@ -93,10 +93,16 @@ export default function RecommendationFromUserInput() {
         )
       : [];
 
-    const category: string =
+    const categorySlug: string =
       categoryFromUserInput ||
       (selectedCategory && selectedCategory.name) ||
       "products";
+
+    const category =
+      categories.find((category) => category.code === categorySlug)?.name ||
+      subCategories.find((subCategory) => subCategory.code === categorySlug)
+        ?.name ||
+      categorySlug;
 
     const products = Boolean(selectedProducts.length)
       ? selectedProducts

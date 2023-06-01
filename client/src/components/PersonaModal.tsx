@@ -93,8 +93,6 @@ export default function PersonaModal() {
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const { personality, chatGPTModel } = state;
 
-  console.log("chatGPTModel", chatGPTModel);
-
   const setPersonality = (personality: string) => {
     localStorage.setItem("personality", personality);
     dispatch({ type: "SET_PERSONALITY", payload: personality });
@@ -103,7 +101,6 @@ export default function PersonaModal() {
   };
 
   const setChatGPTModel = (chatGPTModel: "gpt-3.5-turbo" | "gpt-4") => {
-    console.log("setChatGPTModel", chatGPTModel);
     localStorage.setItem("chatGPTModel", chatGPTModel);
     dispatch({ type: "SET_CHAT_GPT_MODEL", payload: chatGPTModel });
   };
@@ -163,7 +160,7 @@ export default function PersonaModal() {
             </div>
             <button
               className={
-                "sticky top-4 z-10 mb-4 w-fit self-end rounded bg-gray-400 px-4 py-2 font-bold text-white shadow-md transition duration-200 hover:bg-gray-500"
+                "absolute right-4 top-4 z-10 mb-4 w-fit self-end rounded bg-gray-400 px-4 py-2 font-bold text-white shadow-md transition duration-200 hover:bg-gray-500"
               }
               onClick={closeModal}
             >
@@ -217,53 +214,10 @@ export default function PersonaModal() {
                   <div></div>
                 </SwiperSlide>
               ))}
-              {/* <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-1.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-2.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-3.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-4.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-5.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-6.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-7.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-8.jpg" />
-                </SwiperSlide>
-                <SwiperSlide>
-                  <img src="https://swiperjs.com/demos/images/nature-9.jpg" />
-                </SwiperSlide> */}
             </Swiper>
           </>
         </div>
       </Modal>
     </>
-    // <CustomSelect
-    //   value={personality}
-    //   onChange={(value) => setPersonality(value)}
-    //   options={personalityOptions}
-    //   className="w-auto"
-    //   triggerElement={
-    //     <div className={"flex flex-col"}>
-    //       <img
-    //         loading="lazy"
-    //         src={getPersonalityImgUrl(personality)}
-    //         alt="Drikkekompis Logo"
-    //         className="header-logo ml-auto  h-8 w-8  rounded-full border-2 border-gray-600 object-cover "
-    //       />
-    //     </div>
-    //   }
-    // />
   );
 }

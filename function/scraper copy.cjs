@@ -56,7 +56,7 @@ const KATEGORIER =
       ];
 
 async function deleteOutdatedStores(firestore, storeIDs) {
-  const storesSnapshot = await firestore.collection("storesTest").get();
+  const storesSnapshot = await firestore.collection("stores").get();
   const deleteQueue = [];
 
   storesSnapshot.forEach((doc) => {
@@ -337,9 +337,7 @@ async function scrapeAllProductDataFromStores() {
               console.log("Done with store", storeId, "and category", category);
 
               if (Object.keys(products).length > 0) {
-                const storeRef = firestore
-                  .collection("storesTest")
-                  .doc(storeId);
+                const storeRef = firestore.collection("stores").doc(storeId);
 
                 await storeRef.set({ store_id: storeId });
 

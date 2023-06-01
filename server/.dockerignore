@@ -1,2 +1,5 @@
 .env
 .env.production
+
+drikkekompis-firestore-test*
+eriks-playground-firestore-test*

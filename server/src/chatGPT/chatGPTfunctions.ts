@@ -31,8 +31,6 @@ export async function chatGPTProductConversationHandler({
   chatGPTModel = "gpt-3.5-turbo", // "gpt-4",
   temperature = 0.9,
 }) {
-  console.log({ chatGPTModel, temperature });
-
   try {
     const response = await openaiInstance.createChatCompletion({
       model: chatGPTModel,

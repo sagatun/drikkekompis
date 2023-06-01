@@ -101,7 +101,11 @@ async function newPageWithRandomUserAgent(browser) {
 }
 
 async function deleteOutdatedStores(firestore, storeIDs) {
-  const storesSnapshot = await firestore.collection("storesTest").get();
+  if (storeIDs.length < 100) {
+    return;
+    throw new Error("Too few stores in list, manual confirmation required.");
+  }
+  const storesSnapshot = await firestore.collection("stores").get();
   const deleteQueue = [];
 
   storesSnapshot.forEach((doc) => {
@@ -109,6 +113,11 @@ async function deleteOutdatedStores(firestore, storeIDs) {
       deleteQueue.push(doc.ref);
     }
   });
+
+  if (deleteQueue.length > 10) {
+    return;
+    throw new Error("Too many stores to delete, manual confirmation required.");
+  }
 
   console.log("deleteQueue", deleteQueue);
 
@@ -163,10 +172,9 @@ async function scrapeStoreByCategory(browser, storeId, category) {
   try {
     response = await page.goto(initialUrl, {
       waitUntil: "networkidle2",
-      timeout: 8000, // Increase the timeout duration to 120 seconds
+      timeout: 8000,
     });
 
-    // Add this after the page loads
     await humanize(page);
     await page.waitForTimeout(500 + Math.floor(Math.random() * 1000));
   } catch (error) {
@@ -238,7 +246,7 @@ async function scrapeStoreByCategory(browser, storeId, category) {
 }
 
 async function getStores() {
-  if (true) {
+  if (false) {
     const firestore = await getFirestoreInstance();
 
     // fetch the list of all store IDs
@@ -248,12 +256,11 @@ async function getStores() {
 
     // fetch the list of already scraped stores, sorted by lastScraped timestamp
     const scrapedStoresSnapshot = await firestore
-      .collection("storesTest")
+      .collection("stores")
       .where("lastScraped", "!=", null)
       .orderBy("lastScraped")
       .get();
 
-    //TODO:
     const scrapedStores = scrapedStoresSnapshot.docs.map((doc) => doc.id);
 
     console.log("scrapedStores", scrapedStores);
@@ -275,7 +282,19 @@ async function getStores() {
 
     return combinedStores;
   } else {
-    return ["163", "200"]; //["115", "200", "269", "368"];
+    // fetch the list of all store IDs
+    const allStores = await fetchAllStores();
+
+    const storesToScrape = ["200", "269", "368", "216", "133"]; // 200:Alta, 269:Storslett, 368:Sjævegan, 216:Finnsnes, 133:Lakselv
+
+    // find store 200 and 269 in allStores and return them
+    const stores = allStores.filter((store) =>
+      storesToScrape.includes(store.storeId)
+    );
+
+    console.log(JSON.stringify(stores));
+
+    return stores;
   }
 }
 async function fetchAllStores() {
@@ -437,7 +456,7 @@ async function scrapeAllProductDataFromStores() {
         }
       }
 
-      const storeRef = firestore.collection("storesTest").doc(storeId);
+      const storeRef = firestore.collection("stores").doc(storeId);
 
       await storeRef.set({ store_id: storeId });
 
@@ -454,7 +473,7 @@ async function scrapeAllProductDataFromStores() {
       let currentTimestamp = Timestamp.now();
 
       if (Object.keys(products).length > 0) {
-        const storeRef = firestore.collection("storesTest").doc(storeId);
+        const storeRef = firestore.collection("stores").doc(storeId);
 
         await storeRef.set({
           store_id: storeId,

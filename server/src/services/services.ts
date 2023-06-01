@@ -7,8 +7,6 @@ export async function chatGPTConversationService(req, res) {
   const openaiInstance = await getOpenaiInstance();
   const productsResponse = req.body;
 
-  console.log("productsResponse: ", productsResponse);
-
   const conversationHistory = productsResponse?.conversationHistory;
 
   const chatGPTModel = productsResponse?.chatGPTModel;

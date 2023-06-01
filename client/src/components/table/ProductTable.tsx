@@ -1,14 +1,6 @@
-import React, {
-  ReactElement,
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-} from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import ProductCards from "./ProductCards";
-import { Product } from "../../types";
-import ProductCard from "../shared/ProductCard";
-import { CategorySelect } from "./CategorySelect";
+
 import { DebouncedInput } from "./DebouncedInput";
 import { IndeterminateCheckbox } from "./IndeterminateCheckbox";
 import { useAppState } from "../../context/AppState.context.js";
@@ -26,19 +18,11 @@ import { Pagination } from "./pagination/Pagination";
 import { PaginationCountPages } from "./pagination/Pagination_CountPages";
 
 export function ProductTable() {
-  const [showSelectedProducts, setShowSelectedProducts] = useState(false);
   const [state, dispatch] = useAppState();
 
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
   const [globalFilter, setGlobalFilter] = useState("");
-
-  const setSelectedCategory = useCallback(
-    (category: any) => {
-      dispatch({ type: "SET_SELECTED_CATEGORY", payload: category });
-    },
-    [dispatch]
-  );
 
   const setSelectedProducts = useCallback(
     (products: any[]) => {
@@ -47,7 +31,7 @@ export function ProductTable() {
     [dispatch]
   );
 
-  const { categories, productsInStore: data, selectedProducts } = state;
+  const { categories, subCategories, productsInStore: data } = state;
 
   const columns = useMemo(
     () => [
@@ -157,6 +141,7 @@ export function ProductTable() {
             header: () => <span>Prosent Alkohol</span>,
             footer: (props) => props.column.id,
           },
+          { accessorFn: (row) => row.mainSubCategory?.code || "N/A" },
         ],
       },
     ],
@@ -183,9 +168,6 @@ export function ProductTable() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    // debugTable: true,
-    // debugHeaders: true,
-    // debugColumns: false,
   });
 
   useEffect(() => {
@@ -199,35 +181,8 @@ export function ProductTable() {
   }, [rowSelection, setSelectedProducts, table]);
 
   return (
-    <div className="mx-auto">
+    <div className="mx-auto pb-4 pr-4">
       <div className="flex flex-col items-center justify-between">
-        {/* <button
-          onClick={() => setShowSelectedProducts((prev) => !prev)}
-          className="my-4 w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out hover:bg-gray-300"
-        >
-          {`${
-            showSelectedProducts
-              ? "Skjul valgte produkter"
-              : "Vis valgte produkter"
-          } (${Object.keys(rowSelection).length})`}
-        </button>
-        {showSelectedProducts && (
-          <ul className="my-4 md:my-0">
-            {selectedProducts.map((product: Product) => {
-              return (
-                <React.Fragment key={product.productId}>
-                  <ProductCard product={product} />
-                </React.Fragment>
-              );
-            })}
-            <li
-              onClick={() => setRowSelection([])}
-              className="my-8 rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out hover:bg-gray-300"
-            >
-              Nullstill listen
-            </li>
-          </ul>
-        )} */}
         <div className="flex w-full flex-col items-center justify-between space-y-4 md:flex-row md:space-x-4 md:space-y-0">
           <DebouncedInput
             value={globalFilter ?? ""}
@@ -235,14 +190,6 @@ export function ProductTable() {
             placeholder="Søk i alle produkter...."
             className="mb-8 w-full rounded-md bg-gray-200 px-4 py-2 text-gray-800 shadow-sm transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-600 md:w-auto"
           />
-          {/* <CategorySelect
-            categories={categories}
-            setColumnFilters={setColumnFilters}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            className="w-full md:w-auto"
-          /> */}
-
           <Pagination table={table} />
           <PaginationCountPages table={table} />
         </div>

@@ -128,7 +128,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         <div
           style={{
             width: "calc(100vw - 2rem)",
-            zIndex: "10",
+            zIndex: "20",
             maxHeight: "40vh",
           }}
           className="absolute right-4 mt-2 overflow-auto rounded bg-gray-100 p-2 shadow-lg"

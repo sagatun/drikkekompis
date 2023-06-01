@@ -3,7 +3,7 @@ const { SecretManagerServiceClient } = require("@google-cloud/secret-manager");
 async function getSecret(secretName, retries = 3, delayFactor = 2) {
   if (process.env.NODE_ENV === "production") {
     const client = new SecretManagerServiceClient();
-    const projectID = "eriks-playground-378311";
+    const projectID = "drikkekompis";
 
     let attempt = 0;
     while (attempt < retries) {
