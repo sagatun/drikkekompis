@@ -17,35 +17,35 @@ import { EffectCoverflow, Pagination } from "swiper";
 
 const personalityOptions = [
   {
-    gptModel: "gpt-3.5-turbo",
+    gptModel: "gpt-3.5-turbo-16k",
     imageUrl: "personas/expert192.png",
     description: `Eksperten er en AI-språkmodell med en dyp kunnskapsbase om alkoholholdige og alkoholfrie drikker. Den er alltid klar til å dele innsikt og anbefalinger med en profesjonell og vennlig tone.`,
     value: "expert",
     label: "Eksperten",
   },
   {
-    gptModel: "gpt-3.5-turbo",
+    gptModel: "gpt-3.5-turbo-16k",
     imageUrl: "personas/gangsta192.png",
     description: `DrikkeGKompiz er en AI-språkmodell med en gangsta rap-persona. Den formidler sin omfattende kunnskap om drikkevarer gjennom rytmiske rap-vers, alltid med stil og attityde.`,
     value: "rapper",
     label: "DrikkeGkompiZ",
   },
   {
-    gptModel: "gpt-3.5-turbo",
+    gptModel: "gpt-3.5-turbo-16k",
     imageUrl: "personas/sarkastisk192.png",
     description: `DrikkeIronisk er en AI-språkmodell med en sarkastisk persona. Den formidler sin kunnskap om drikkevarer med en skarp tunge og en bitende vidd, men gir alltid verdifull informasjon - selv om det er pakket inn i en dose ironi.`,
     value: "sarcastic",
     label: "DrikkeIronisk",
   },
   {
-    gptModel: "gpt-3.5-turbo",
+    gptModel: "gpt-3.5-turbo-16k",
     imageUrl: "personas/pirat192.png",
     description: `Sjøsprøyt er en AI-språkmodell med en pirat-persona. Den formidler sin omfattende kunnskap om drikkevarer gjennom munter sjargong og ekstravagante havfortellinger, alltid med en god porsjon eventyrlyst.`,
     value: "pirat",
     label: "Sjøsprøyt",
   },
   {
-    gptModel: "gpt-3.5-turbo",
+    gptModel: "gpt-3.5-turbo-16k",
     imageUrl: "personas/poet192.png",
     description: `Poeten er en AI-språkmodell som formidler sin kunnskap om drikkevarer gjennom poetisk prosa. Dens anbefalinger er ikke bare informerende, men er også omsvøpt i vakre og tankevekkende vers.`,
     value: "poet",
@@ -100,7 +100,7 @@ export default function PersonaModal() {
     // setModalIsOpen(false);
   };
 
-  const setChatGPTModel = (chatGPTModel: "gpt-3.5-turbo" | "gpt-4") => {
+  const setChatGPTModel = (chatGPTModel: "gpt-3.5-turbo-16k" | "gpt-4") => {
     localStorage.setItem("chatGPTModel", chatGPTModel);
     dispatch({ type: "SET_CHAT_GPT_MODEL", payload: chatGPTModel });
   };
@@ -151,10 +151,12 @@ export default function PersonaModal() {
               <select
                 value={chatGPTModel}
                 onChange={(e) =>
-                  setChatGPTModel(e.target.value as "gpt-3.5-turbo" | "gpt-4")
+                  setChatGPTModel(
+                    e.target.value as "gpt-3.5-turbo-16k" | "gpt-4"
+                  )
                 }
               >
-                <option value="gpt-3.5-turbo">Chat GPT 3.5 Turbo</option>
+                <option value="gpt-3.5-turbo-16k">Chat GPT 3.5 Turbo</option>
                 <option value="gpt-4">Chat GPT 4</option>
               </select>
             </div>

@@ -1,14 +1,27 @@
 import { Firestore } from "@google-cloud/firestore";
 
-let firestoreInstance: string | Firestore;
+let firestoreInstance: Firestore | undefined;
 
 export async function initializeFirestore() {
+  console.log("Initializing Firestore...");
+
   if (!firestoreInstance) {
     const firestoreConfig = {};
-
-    firestoreInstance = new Firestore(firestoreConfig);
+    try {
+      firestoreInstance = new Firestore(firestoreConfig);
+    } catch (error) {
+      console.error("Failed to initialize Firestore", error);
+      throw error;
+    }
   }
-  console.log("Firestore initialized: " + firestoreInstance);
+
+  if (firestoreInstance instanceof Firestore) {
+    console.log("Firestore instance is valid");
+  } else {
+    console.error("Firestore instance is not valid");
+  }
+
+  console.log("Firestore initialized.");
 }
 
 export async function getFirestoreInstance() {

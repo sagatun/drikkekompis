@@ -112,11 +112,16 @@ export default function RecommendationFromUserInput() {
 
     const mappedProducts = products && convertProductList(products);
 
-    const listSizeLimit = chatGPTModel === "gpt-4" ? 200 : 100;
+    const listSizeLimit = chatGPTModel === "gpt-4" ? 400 : 800;
 
     const randomizedAndCappedProducts = randomizeAndCap(
       mappedProducts,
       listSizeLimit
+    );
+
+    console.log(
+      "randomizedAndCappedProductsLength",
+      randomizedAndCappedProducts.length
     );
 
     setGPTProductList(randomizedAndCappedProducts);

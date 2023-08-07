@@ -11,13 +11,13 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "https://client-bdwsmnrktq-lz.a.run.app", //torn sin
       "https://client-wyqxm5q4yq-lz.a.run.app", // kompis på personlig gcloug
       "http://localhost:3000",
+      "http://localhost:4200",
       "https://drikkekompis.eu",
+      "https://drikkekompis.app",
       "https://www.drikkekompis.eu",
-      "http://localhost:8025", //test url
-      "https://dev.torn.no", //test url
+      "https://www.drikkekompis.app",
     ],
     credentials: true,
   })
@@ -26,8 +26,12 @@ app.use(
 const port = process.env.PORT || 5001;
 
 async function initializeServer() {
-  await initializeOpenAI();
-  await initializeFirestore();
+  try {
+    await initializeOpenAI();
+    await initializeFirestore();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 initializeServer();

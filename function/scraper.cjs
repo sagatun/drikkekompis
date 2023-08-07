@@ -171,7 +171,7 @@ async function scrapeStoreByCategory(browser, storeId, category) {
   let response;
   try {
     response = await page.goto(initialUrl, {
-      waitUntil: "networkidle2",
+      waitUntil: "domcontentloaded",
       timeout: 8000,
     });
 
@@ -218,7 +218,10 @@ async function scrapeStoreByCategory(browser, storeId, category) {
 
     await page.waitForTimeout(11000 + Math.floor(Math.random() * 3000));
 
-    await page.goto(currentUrl, { waitUntil: "networkidle2", timeout: 8000 });
+    await page.goto(currentUrl, {
+      waitUntil: "domcontentloaded",
+      timeout: 8000,
+    });
 
     await page.waitForTimeout(1000 + Math.floor(Math.random() * 2000));
 
@@ -265,6 +268,8 @@ async function getStores() {
 
     console.log("scrapedStores", scrapedStores);
 
+    console.log("scrapedStores length", scrapedStores.length);
+
     // get stores that have not been scraped with date stamp yet
     // and randomize the order
     const stores = allStores
@@ -285,9 +290,8 @@ async function getStores() {
     // fetch the list of all store IDs
     const allStores = await fetchAllStores();
 
-    const storesToScrape = ["200", "269", "368", "216", "133"]; // 200:Alta, 269:Storslett, 368:Sjævegan, 216:Finnsnes, 133:Lakselv
+    const storesToScrape = ["200"]; // ["200", "269", "368", "216", "133"]; // 200:Alta, 269:Storslett, 368:Sjævegan, 216:Finnsnes, 133:Lakselv
 
-    // find store 200 and 269 in allStores and return them
     const stores = allStores.filter((store) =>
       storesToScrape.includes(store.storeId)
     );
@@ -514,3 +518,5 @@ async function scrapeAllProductDataFromStores() {
 }
 
 module.exports = scrapeAllProductDataFromStores;
+
+// 241, 231, 227, 221, 450, 436, 116, 355. 385, 399

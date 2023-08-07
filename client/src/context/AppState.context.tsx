@@ -18,7 +18,7 @@ const initialState: AppState = {
   personality: "",
   recommendedProducts: [],
   view: "chat",
-  chatGPTModel: "gpt-3.5-turbo",
+  chatGPTModel: "gpt-3.5-turbo-16k",
   messages: [
     {
       role: "assistant",
@@ -47,7 +47,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
 
   const localSelectedStore = localStorage.getItem("chatGPTModel");
 
-  const localChatGPTModel: "gpt-3.5-turbo" | "gpt-4" | string | null =
+  const localChatGPTModel: "gpt-3.5-turbo-16k" | "gpt-4" | string | null =
     localStorage.getItem("chatGPTModel");
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
     if (localChatGPTModel) {
       dispatch({
         type: "SET_CHAT_GPT_MODEL",
-        payload: localChatGPTModel as "gpt-3.5-turbo" | "gpt-4",
+        payload: localChatGPTModel as "gpt-3.5-turbo-16k" | "gpt-4",
       });
     }
   }, []);
