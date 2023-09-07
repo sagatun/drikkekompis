@@ -18,6 +18,8 @@ app.use(
       "https://drikkekompis.app",
       "https://www.drikkekompis.eu",
       "https://www.drikkekompis.app",
+      "https://erik-lessoneditor.nw.r.appspot.com",
+      "https://lessoneditor.ew.r.appspot.com"
     ],
     credentials: true,
   })
