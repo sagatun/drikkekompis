@@ -21,10 +21,10 @@ services:
 
   scraper:
     build:
-      context: ./function
+      context: ./scraper
       dockerfile: Dockerfile
     ports:
       - 3012:3012
     volumes:
-      - ./function:/app/function
-      - /app/function/node_modules
+      - ./scraper:/app/scraper
+      - /app/scraper/node_modules

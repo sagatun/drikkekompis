@@ -4,9 +4,7 @@ import { ClipLoader } from "react-spinners";
 
 import { useAppState } from "../context/AppState.context.js";
 
-export interface IChatPageProps {}
-
-export function ChatPage(props: IChatPageProps) {
+export function ChatPage() {
   const [state] = useAppState();
 
   const { productsInStore } = state;

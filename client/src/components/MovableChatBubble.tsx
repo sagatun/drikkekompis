@@ -5,9 +5,9 @@ import FiMessageCircle from "@iconscout/react-unicons/icons/uil-react";
 const MovableChatBubble = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const animationTimeout = useRef(null);
+  const animationTimeout = useRef<any>(null);
 
-  const handleStart = (e) => {
+  const handleStart = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -21,7 +21,7 @@ const MovableChatBubble = () => {
     });
   };
 
-  const handleMove = (e) => {
+  const handleMove = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -42,23 +42,25 @@ const MovableChatBubble = () => {
     }
   };
 
-  const handleEnd = (e) => {
+  const handleEnd = (e: any) => {
     e.preventDefault();
     e.stopPropagation();
-    if (animationTimeout.current) clearTimeout(animationTimeout.current);
+    if (animationTimeout.current) {
+      clearTimeout(animationTimeout.current);
+    }
     animationTimeout.current = setTimeout(() => setIsDragging(false), 100);
   };
 
-  const getCoordinates = (event) => {
-    if (event.type.startsWith("touch")) {
+  const getCoordinates = (e: any) => {
+    if (e.type.startsWith("touch")) {
       return {
-        clientX: event.touches[0].clientX,
-        clientY: event.touches[0].clientY,
+        clientX: e.touches[0].clientX,
+        clientY: e.touches[0].clientY,
       };
     } else {
       return {
-        clientX: event.clientX,
-        clientY: event.clientY,
+        clientX: e.clientX,
+        clientY: e.clientY,
       };
     }
   };

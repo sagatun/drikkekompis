@@ -70,7 +70,7 @@ La oss starte en samtale og jeg vil dele min kunnskap og innsikt med deg for å 
       <div className="m-auto flex flex-col overflow-y-auto md:flex-row">
         <ChatComponent
           messages={messages}
-          product={product}
+          products={product}
           handleSendMessage={handleSendMessage}
           isLoading={chatGPTMutation.isLoading}
           inputMessage={inputMessage}

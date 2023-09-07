@@ -45,8 +45,6 @@ export default function RecommendationFromUserInput() {
   function handleChatGPTResponse(response: any) {
     const rawContent = response.conversationHistory.pop().content;
 
-    // const names = filteredProducts.map((product: Product) => product.name);
-
     const namesFromResponse = getNamesFromResponse(rawContent, GPTProductList);
 
     setMessages([

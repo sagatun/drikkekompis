@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import Modal from "react-modal";
-import { useAppState } from "../context/AppState.context.js";
-import { getPersonalityImgUrl } from "../utils/helpers.js";
+import { useAppState } from "../context/AppState.context";
+import { getPersonalityImgUrl } from "../utils/helpers";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -13,7 +13,7 @@ import "swiper/css/pagination";
 import "./PersonaModal.css";
 
 // import required modules
-import { EffectCoverflow, Pagination } from "swiper";
+import { EffectCoverflow, Pagination } from "swiper/modules";
 
 const personalityOptions = [
   {

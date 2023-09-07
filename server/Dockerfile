@@ -7,4 +7,4 @@ RUN npm ci --include=dev
 COPY . .
 
 EXPOSE 5001
-CMD ["npm", "run", "start-server"]
+CMD ["npm", "run", "dev"]

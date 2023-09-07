@@ -64,7 +64,7 @@ export function ProductTable() {
         footer: (props: any) => props.column.id,
         columns: [
           {
-            accessorFn: (row) => row.productId,
+            accessorFn: (row: { productId: any }) => row.productId,
             id: "productId",
             cell: (info: any) => (
               <img
@@ -84,54 +84,58 @@ export function ProductTable() {
             footer: (props: any) => props.column.id,
           },
           {
-            accessorFn: (row) =>
+            accessorFn: (row: { mainProducer: { name: any } }) =>
               (row.mainProducer && row.mainProducer?.name) || "N/A",
             id: "mainProducer",
-            cell: (info) => info.getValue(),
+            cell: (info: { getValue: () => any }) => info.getValue(),
             header: () => <span>Produsent</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) => row.containerSize || "N/A",
+            accessorFn: (row: { containerSize: any }) =>
+              row.containerSize || "N/A",
             id: "containerSize",
-            cell: (info) => info.getValue(),
+            cell: (info: { getValue: () => any }) => info.getValue(),
             header: () => <span>Størrelse</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) =>
+            accessorFn: (row: { mainCategory: { name: any } }) =>
               (row.mainCategory && row.mainCategory?.name) || "N/A",
             id: "mainCategory",
-            cell: (info) => info.getValue(),
+            cell: (info: { getValue: () => any }) => info.getValue(),
             header: () => <span>Kategori</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) =>
+            accessorFn: (row: { mainCountry: { name: any } }) =>
               (row.mainCountry && row.mainCountry?.name) || "N/A",
             id: "mainCountry",
-            cell: (info) => info.getValue(),
+            cell: (info: { getValue: () => any }) => info.getValue(),
             header: () => <span>Land</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) => (row.district && row.district?.name) || "N/A",
+            accessorFn: (row: { district: { name: any } }) =>
+              (row.district && row.district?.name) || "N/A",
             id: "district",
-            cell: (info) => info.getValue(),
+            cell: (info: { getValue: () => any }) => info.getValue(),
             header: () => <span>Distrikt</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) => row.price || "N/A",
+            accessorFn: (row: { price: any }) => row.price || "N/A",
             id: "price",
-            cell: (info) => <span>{`${info.getValue()} kr`}</span>,
+            cell: (info: { getValue: () => any }) => (
+              <span>{`${info.getValue()} kr`}</span>
+            ),
             header: () => <span>Pris</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
           {
-            accessorFn: (row) => row.abv || "Alkoholfritt",
+            accessorFn: (row: { abv: any }) => row.abv || "Alkoholfritt",
             id: "abv",
-            cell: (info) => (
+            cell: (info: { getValue: () => string }) => (
               <span>{`${
                 info.getValue() !== "Alkoholfritt"
                   ? info.getValue() + "%"
@@ -139,9 +143,12 @@ export function ProductTable() {
               }`}</span>
             ),
             header: () => <span>Prosent Alkohol</span>,
-            footer: (props) => props.column.id,
+            footer: (props: { column: { id: any } }) => props.column.id,
           },
-          { accessorFn: (row) => row.mainSubCategory?.code || "N/A" },
+          {
+            accessorFn: (row: { mainSubCategory: { code: any } }) =>
+              row.mainSubCategory?.code || "N/A",
+          },
         ],
       },
     ],

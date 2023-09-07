@@ -1,4 +1,4 @@
-const KATEGORIER = [
+export const KATEGORIER = [
   "øl",
   "rødvin",
   "hvitvin",
@@ -16,5 +16,12 @@ const KATEGORIER = [
   "øvrig_svakvin",
 ];
 
-//export module
-module.exports = KATEGORIER;
+export const RESOURCE_TYPES_TO_BLOCK = [
+  "stylesheet",
+  "image",
+  "media",
+  "font",
+  "websocket",
+  "manifest",
+  "other",
+];

@@ -2,7 +2,7 @@ import React from "react";
 import { useIsFetching } from "@tanstack/react-query";
 import { useAppState } from "../context/AppState.context";
 import { ClipLoader } from "react-spinners";
-import { Link, useRouter } from "@tanstack/router";
+import { Link, useRouter } from "@tanstack/react-router";
 
 function Navigation() {
   const [state] = useAppState();
@@ -13,13 +13,13 @@ function Navigation() {
 
   const params = useRouter();
 
-  const view = params.state?.currentLocation.pathname;
+  const view = params.state?.location?.pathname;
 
   const productsDisabled =
     !productsInStore || productsInStore.length === 0 || productsIsFetching > 0;
 
   return (
-    <div className="flex justify-start gap-2 align-middle">
+    <nav className="flex justify-start gap-2 align-middle">
       <Link
         from="/products"
         to="/"
@@ -48,7 +48,7 @@ function Navigation() {
           </button>
         </Link>
       )}
-    </div>
+    </nav>
   );
 }
 

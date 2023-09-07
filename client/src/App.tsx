@@ -11,7 +11,7 @@ import {
   Router,
   Route,
   RootRoute,
-} from "@tanstack/router";
+} from "@tanstack/react-router";
 
 // Create a root route
 const rootRoute = new RootRoute({ component: Root });
@@ -28,9 +28,9 @@ function Root() {
       <div className="header-container h-16 w-full">
         <Header />
       </div>
-      {/* <div className="button-container z-10 mx-auto flex h-16 w-full max-w-[600px] items-center justify-start px-4">
+      <div className="button-container z-10 mx-auto flex h-16 w-full max-w-[600px] items-center justify-start px-4">
         <Navigation />
-      </div> */}
+      </div>
       <Outlet />
     </div>
   );
@@ -55,7 +55,7 @@ const routeTree = rootRoute.addChildren([chatRoute, productsRoute]);
 const router = new Router({ routeTree });
 
 // Register your router for maximum type safety
-declare module "@tanstack/router" {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }

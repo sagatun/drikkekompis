@@ -11,7 +11,7 @@ import "./SmoothCarousel.css";
 import ProductCard from "./shared/ProductCard";
 
 // import required modules
-import { EffectCards } from "swiper";
+import { EffectCards } from "swiper/modules";
 
 export function SmoothCarousel({ products }: { products?: Product[] }) {
   return (

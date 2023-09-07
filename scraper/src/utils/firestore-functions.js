@@ -1,11 +1,16 @@
-const { Firestore } = require("@google-cloud/firestore");
+import { Firestore } from "@google-cloud/firestore";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let firestoreInstance;
 
 const serviceAccount =
   process.env.NODE_ENV === "production"
     ? null
-    : require("./drikkekompis-firestore-test.json");
+    : await import("../../drikkekompis-firestore-test.json", {
+        assert: { type: "json" },
+      });
 
 // Rest of the code remains the same
 
@@ -13,7 +18,7 @@ async function initializeFirestore() {
   if (!firestoreInstance) {
     const firestoreConfig =
       process.env.NODE_ENV === "production"
-        ? {}
+        ? null
         : {
             projectId: serviceAccount.project_id,
             credentials: serviceAccount,
@@ -31,4 +36,4 @@ async function getFirestoreInstance() {
   return firestoreInstance;
 }
 
-module.exports = { initializeFirestore, getFirestoreInstance };
+export { initializeFirestore, getFirestoreInstance };

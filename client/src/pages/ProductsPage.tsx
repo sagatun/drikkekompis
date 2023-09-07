@@ -1,13 +1,9 @@
 import * as React from "react";
 import { ProductTable } from "../components/table/ProductTable.js";
-
 import { ClipLoader } from "react-spinners";
-
 import { useAppState } from "../context/AppState.context.js";
 
-export interface IProductsPageProps {}
-
-export function ProductsPage(props: IProductsPageProps) {
+export function ProductsPage() {
   const [state] = useAppState();
 
   const { productsInStore } = state;

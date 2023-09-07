@@ -1,7 +1,6 @@
 // vite.config.ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import eslint from "vite-plugin-eslint";
 import { VitePWA } from "vite-plugin-pwa";
 import { pwaConfig } from "./pwa.config";
 
@@ -9,7 +8,6 @@ import { pwaConfig } from "./pwa.config";
 export default defineConfig({
   plugins: [
     react(),
-    eslint(),
     VitePWA({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       registerType: "autoUpdate",
@@ -21,12 +19,5 @@ export default defineConfig({
     host: true,
     port: 3000,
   },
-  build: {
-    target: "esnext",
-  },
-  resolve: {
-    alias: {
-      "@": "/src",
-    },
-  },
+
 });
