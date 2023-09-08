@@ -6,6 +6,15 @@ Drikkekompis is a project that aims to help users find the perfect drink for the
 
 Check out the live demo [here](https://drikkekompis.app).
 
+## 🚀 Prerequisites
+
+Before you begin, make sure you have:
+
+- A Google Cloud account.
+- Cloud Run and Firestore services enabled on your Google Cloud account.
+
+These services are essential for the project's server and database functionalities.
+
 ## Installation and Setup
 
 To run the project, you will need Docker installed on your machine. Once you have Docker, you can start the project by running the following command in the root directory of the project:
