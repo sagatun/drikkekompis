@@ -2,6 +2,10 @@
 
 Drikkekompis is a project that aims to help users find the perfect drink for their occasion, whether it's a party, a date, or just a cozy night in. The project consists of a client built with Vite and ReactJS, a server built with NodeJS and Express, and a scraper that uses Firestore.
 
+## 🌐 Live Demo
+
+Check out the live demo [here](https://drikkekompis.app).
+
 ## Installation and Setup
 
 To run the project, you will need Docker installed on your machine. Once you have Docker, you can start the project by running the following command in the root directory of the project:
