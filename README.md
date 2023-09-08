@@ -14,6 +14,18 @@ docker-compose up --build
 
 The following environment variables need to be set for the project to work properly:
 
+Each .env files should be placed in each project folders:
+
+```bash
+
+./client/.env
+./scraper/.env
+./server/.env
+
+```
+
+🔐 Important: For the server and scraper to function correctly, you must also place your Google Cloud service account JSON key in the root directory of each. Name the file according to the value you provide for the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+
 ### Client
 
 - `VITE_SERVER_URL`: The local server URL.
@@ -23,11 +35,13 @@ The following environment variables need to be set for the project to work prope
 
 - `VINMONOPOLET_API_KEY`: The API key from api.vinmonopolet.no.
 - `GPT_API_KEY`: The API key from OpenAI.
+- `GOOGLE_APPLICATION_CREDENTIALS`: The gcloud service account key (json file)
 
-### Cloud Function
+### Scraper
 
 - `PORT`: The localhost port.
 - `VINMONOPOLET_API_KEY`: The API key from api.vinmonopolet.no.
+- `GOOGLE_APPLICATION_CREDENTIALS`: The gcloud service account key (json file)
 
 ## Packages Used
 
@@ -36,26 +50,22 @@ The project uses the following packages:
 ### Client
 
 - `@tanstack/react-query`: A popular data fetching and caching library.
-- `@tanstack/react-query-devtools`: A tool to help debug and visualize queries.
 - `@tanstack/react-table`: A flexible and powerful table library.
 - `axios`: A popular promise-based HTTP client.
-- `dotenv`: A zero-dependency module that loads environment variables from a .env file.
 - `react`: A popular library for building user interfaces.
-- `react-dom`: A package that provides DOM-specific methods that can be used at the top level of an app to enable React features.
-- `react-select`: A flexible and powerful select control for React.
-- `serve`: A package that serves a static site or single-page app.
 
 ### Server
 
 - `@google-cloud/firestore`: A package that provides access to Firestore, a NoSQL document database built for automatic scaling, high performance, and ease of application development.
 - `@google-cloud/functions-framework`: A package that provides a framework for writing lightweight, modular functions in Node.js that run in many different environments, including Cloud Functions.
 - `@google-cloud/secret-manager`: A package that provides access to Secret Manager, a secure and convenient storage system for API keys, passwords, and other sensitive data.
-- `axios`: A popular promise-based HTTP client.
-- `dotenv`: A zero-dependency module that loads environment variables from a .env file.
 - `express`: A popular and minimalistic web framework for Node.js.
-- `nodemon`: A tool that automatically restarts the server when changes are detected.
 - `openai`: A package that provides access to the OpenAI GPT-3 API, a state-of-the-art natural language processing system.
-- `puppeteer-core`: A Node.js library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol.
+
+### Scraper
+
+- `puppeteer`: A Node.js library which provides a high-level API to control Chrome or Chromium over the DevTools Protocol.
+- `express`: A popular and minimalistic web framework for Node.js.
 
 ## File Structure
 

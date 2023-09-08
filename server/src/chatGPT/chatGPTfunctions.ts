@@ -38,8 +38,6 @@ export async function chatGPTProductConversationHandler({
       temperature: temperature,
     });
 
-    console.log("chatGPTProductConversationHandler response: ", response);
-
     const updatedConversationHistory = [
       ...conversationHistory,
       response?.data?.choices[0].message,
