@@ -8,6 +8,7 @@ import {
 } from "../utils/helpers.js";
 import { getFirestoreInstance } from "../utils/firestore-functions.js";
 import { KATEGORIER } from "../utils/constants.js";
+import { Timestamp } from "@google-cloud/firestore";
 
 const SCRAPE_ALL_STORES = false;
 
@@ -89,7 +90,6 @@ async function scrapeAllProductDataFromStores() {
 
       await Promise.all(deletionPromises);
 
-      const { Timestamp } = require("@google-cloud/firestore");
       let currentTimestamp = Timestamp.now();
 
       if (Object.keys(products).length > 0) {
@@ -111,8 +111,19 @@ async function scrapeAllProductDataFromStores() {
           const batch = firestore.batch();
 
           productChunk.forEach(([productId, product]) => {
+            const cleanedProduct = scrapedProductToPlainObject(product);
+            if (
+              typeof cleanedProduct !== "object" ||
+              cleanedProduct instanceof Array
+            ) {
+              console.error(
+                `Product with ID ${productId} is not a valid object.`,
+                cleanedProduct
+              );
+              return; // Skip this product
+            }
             const productRef = productsCollectionRef.doc(productId);
-            batch.set(productRef, scrapedProductToPlainObject(product));
+            batch.set(productRef, cleanedProduct);
           });
 
           await batch.commit();

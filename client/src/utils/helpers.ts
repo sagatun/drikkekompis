@@ -1,4 +1,4 @@
-import { Product } from "../types";
+import { type Product } from "../types";
 
 export function randomizeAndCap<T>(list: T[], maxItems: number): T[] {
   const shuffledList = list.sort(() => Math.random() - 0.5);
@@ -8,7 +8,7 @@ export function randomizeAndCap<T>(list: T[], maxItems: number): T[] {
 
 export function convertProductList(
   products: Product[]
-): { productId: number; productName: string }[] {
+): Array<{ productId: number; productName: string }> {
   return products.map((product) => ({
     productId: product.productId,
     productName: product.name,
@@ -27,6 +27,8 @@ export function getPersonalityImgUrl(personality: string) {
       return "/personas/pirat192.png";
     case "poet":
       return "/personas/poet192.png";
+    case "standup":
+      return "/personas/standup192.png";
     default:
       return "/personas/expert192.png";
   }

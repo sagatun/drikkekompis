@@ -1,8 +1,8 @@
-import React from "react";
-import PersonaModal from "../PersonaModal.js";
-import StoreDropdown from "../StoreDropdown.js";
+import React from 'react'
+import PersonaModal from '../PersonaModal.js'
+import StoreDropdown from '../StoreDropdown.js'
 
-function Header() {
+function Header () {
   return (
     <header className="h-full rounded-bl-lg rounded-br-lg bg-gray-800 px-4 text-white shadow-md">
       <div className="items-top mx-auto flex h-full  max-w-[600px] items-center justify-between ">
@@ -15,7 +15,7 @@ function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

@@ -1,5 +1,6 @@
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
 import { RESOURCE_TYPES_TO_BLOCK } from "./constants.js";
+import { getFirestoreInstance } from "./firestore-functions.js";
 import axios from "axios";
 import vinmonopolet from "vinmonopolet";
 
@@ -37,7 +38,9 @@ async function getSecret(secretName, retries = 3, delayFactor = 2) {
 }
 
 export function scrapedProductToPlainObject(product) {
-  JSON.parse(JSON.stringify(product));
+  const jsonStr = JSON.stringify(product);
+  const productObj = JSON.parse(jsonStr);
+  return productObj;
 }
 
 async function humanize(page) {

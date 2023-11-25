@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react'
 
-import ProductCard from "../shared/ProductCard";
+import ProductCard from '../shared/ProductCard'
 
 interface Props {
-  table: any;
+  table: any
 }
 
-function ProductCards({ table }: Props) {
+function ProductCards ({ table }: Props) {
   return (
     <div className="grid grid-cols-2 gap-3">
       {table.getRowModel().rows.map((row: any) => {
-        const isSelected = row.getIsSelected();
-        const product = row?.original;
+        const isSelected = row.getIsSelected()
+        const product = row?.original
 
         return (
           <ProductCard
@@ -20,10 +20,10 @@ function ProductCards({ table }: Props) {
             toggleSelectHandler={row.getToggleSelectedHandler}
             key={row.id}
           />
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
-export default ProductCards;
+export default ProductCards

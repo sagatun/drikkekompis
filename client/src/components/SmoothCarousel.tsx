@@ -1,23 +1,23 @@
-import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Product } from "src/types";
+import React from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { type Product } from 'src/types'
 
 // Import Swiper styles
-import "swiper/css";
-import "swiper/css/effect-cards";
+import 'swiper/css'
+import 'swiper/css/effect-cards'
 
-import "./SmoothCarousel.css";
+import './SmoothCarousel.css'
 
-import ProductCard from "./shared/ProductCard";
+import ProductCard from './shared/ProductCard'
 
 // import required modules
-import { EffectCards } from "swiper/modules";
+import { EffectCards } from 'swiper/modules'
 
-export function SmoothCarousel({ products }: { products?: Product[] }) {
+export function SmoothCarousel ({ products }: { products?: Product[] }) {
   return (
     <>
       <Swiper
-        effect={"cards"}
+        effect={'cards'}
         grabCursor={true}
         modules={[EffectCards]}
         className="mySwiper"
@@ -25,12 +25,12 @@ export function SmoothCarousel({ products }: { products?: Product[] }) {
         {products?.map((product) => (
           <SwiperSlide
             key={product.code}
-            className="flex items-center justify-center  rounded "
+            className="flex items-center justify-center rounded "
           >
-            <ProductCard product={product} />
+            <ProductCard product={product} minWidth="15rem" minHeight="22rem" />
           </SwiperSlide>
         ))}
       </Swiper>
     </>
-  );
+  )
 }

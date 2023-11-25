@@ -1,20 +1,16 @@
-import { Configuration, OpenAIApi } from "openai";
+// import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import { getSecret } from "../utils/helpers";
 
-let openaiInstance: OpenAIApi;
+let openaiInstance: OpenAI;
 
 export async function initializeOpenAI() {
   if (!openaiInstance) {
     const gptApiKey = (await getSecret("GPT_API_KEY")) ?? "";
 
-    const configuration = new Configuration({
-      organization: "org-SoyEWJwFXEdXKN7iB35K25tu",
-      apiKey: gptApiKey.trim(),
-    });
+    console.log("OpenAI initialized");
 
-    console.log("OpenAI initialized: " + Boolean(configuration));
-
-    openaiInstance = new OpenAIApi(configuration);
+    openaiInstance = new OpenAI({ apiKey: gptApiKey });
   }
 }
 
@@ -28,23 +24,28 @@ export async function getOpenaiInstance() {
 export async function chatGPTProductConversationHandler({
   openaiInstance,
   conversationHistory,
-  chatGPTModel = "gpt-3.5-turbo", // "gpt-4",
-  temperature = 0.9,
+  chatGPTModel = "gpt-4-1106-preview", // "gpt-4",
+  temperature = 0.8,
 }) {
   try {
-    const response = await openaiInstance.createChatCompletion({
-      model: chatGPTModel,
+    // const response = await openaiInstance.createChatCompletion({
+    //   model: chatGPTModel,
+    //   messages: conversationHistory,
+    //   temperature: temperature,
+    // });
+
+    const completion = await openaiInstance.chat.completions.create({
       messages: conversationHistory,
-      temperature: temperature,
+      model: chatGPTModel,
     });
 
     const updatedConversationHistory = [
       ...conversationHistory,
-      response?.data?.choices[0].message,
+      completion.choices[0].message,
     ];
 
     return {
-      conversationText: response?.data?.choices[0]?.message?.content,
+      conversationText: completion.choices[0]?.message?.content,
       conversationHistory: updatedConversationHistory,
     };
   } catch (error) {

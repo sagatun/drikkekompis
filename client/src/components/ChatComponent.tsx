@@ -2,11 +2,9 @@ import React, { useEffect, useRef } from "react";
 import { useAppState } from "../context/AppState.context.js";
 import { SyncLoader } from "react-spinners";
 import { getPersonalityImgUrl } from "../utils/helpers";
-import { Product } from "src/types/index.js";
+import { type Product } from "src/types/index.js";
 import { Message } from "./Message";
-// @ts-ignore
-import Redo from "@iconscout/react-unicons/icons/uil-redo";
-import { SelectProductsModal } from "./SelectProductsModal.js";
+
 import { ChatInput } from "./ChatInput.js";
 
 interface ChatComponentProps {
@@ -14,7 +12,7 @@ interface ChatComponentProps {
   disabled?: boolean;
   handleSendMessage?: () => void;
   inputMessage?: string;
-  isLoading?: boolean;
+  isPending?: boolean;
   setInputMessage?: (message: string) => void;
   messages?: any[];
   setMessages?: any;
@@ -25,13 +23,13 @@ export default function ChatComponent({
   disabled = false,
   handleSendMessage = () => {},
   inputMessage = "",
-  isLoading = false,
+  isPending = false,
   setInputMessage = () => {},
   messages,
 }: ChatComponentProps) {
   const [state] = useAppState();
 
-  const { personality, selectedProducts } = state;
+  const { personality } = state;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +51,7 @@ export default function ChatComponent({
     <>
       <div
         ref={messagesContainerRef}
-        className="flex flex-col overflow-y-auto overflow-x-hidden py-4"
+        className="flex flex-col py-4 overflow-x-hidden overflow-y-auto"
       >
         {messages &&
           messages.length > 0 &&
@@ -70,17 +68,17 @@ export default function ChatComponent({
               )
             )}
 
-        {isLoading && (
-          <div className={`my-2 flex justify-start`}>
+        {isPending && (
+          <div className={"my-2 flex justify-start"}>
             <img
-              className="mr-2 h-10 w-10 rounded-full"
+              className="w-10 h-10 mr-2 rounded-full"
               src={getPersonalityImgUrl(personality)}
               alt="Drikkekompisen"
             />
-            <div className={`rounded-lg bg-chat-gray px-4 py-2 text-black`}>
+            <div className={"rounded-lg bg-chat-gray px-4 py-2 text-black"}>
               <SyncLoader
                 color={"rgb(31, 41,55"}
-                loading={isLoading}
+                loading={isPending}
                 size="8px"
                 margin="3px"
                 className="flex justify-center"
@@ -96,7 +94,6 @@ export default function ChatComponent({
         setInputMessage={setInputMessage}
         handleSendMessage={handleSendMessage}
         disabled={disabled}
-        selectedProducts={selectedProducts}
       />
     </>
   );

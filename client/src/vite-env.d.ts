@@ -1,9 +1,7 @@
 /// <reference types="vite/client" />
 
-interface ViteEnv {
-  [key: string]: string;
-}
+type ViteEnv = Record<string, string>
 
 interface ImportMeta {
-  env: ViteEnv;
+  env: ViteEnv
 }

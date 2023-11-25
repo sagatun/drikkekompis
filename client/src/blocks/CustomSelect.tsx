@@ -1,21 +1,21 @@
-import React, { useState, useRef, useEffect, ChangeEventHandler } from "react";
-import { PuffLoader } from "react-spinners";
-import slugify from "slugify";
+import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
+import { PuffLoader } from 'react-spinners'
+import slugify from 'slugify'
 
 interface Option {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface CustomSelectProps {
-  value: string;
-  onChange: (value: string) => void;
-  options: Option[];
-  className?: string;
-  isSearchable?: boolean;
-  placeholder?: string;
-  isLoading?: boolean;
-  triggerElement: JSX.Element;
+  value: string
+  onChange: (value: string) => void
+  options: Option[]
+  className?: string
+  isSearchable?: boolean
+  placeholder?: string
+  isLoading?: boolean
+  triggerElement: JSX.Element
 }
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -24,15 +24,15 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   options,
   className,
   isSearchable = false,
-  placeholder = "",
+  placeholder = '',
   isLoading = false,
-  triggerElement = <div>Test</div>,
+  triggerElement = <div>Test</div>
 }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isDropdownOpen, setDropdownOpen] = useState(false)
 
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const optionRefs = useRef<Array<HTMLLIElement | null>>([])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,96 +40,97 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setDropdownOpen(false);
+        setDropdownOpen(false)
       }
-    };
+    }
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   useEffect(() => {
     // New effect to scroll to the selected option when dropdown opens
     if (isDropdownOpen) {
       const selectedIndex = options.findIndex(
         (option) => option.value === value
-      );
-      const selectedOptionRef = optionRefs.current[selectedIndex];
+      )
+      const selectedOptionRef = optionRefs.current[selectedIndex]
 
       selectedOptionRef?.scrollIntoView({
-        block: "center",
-        inline: "start",
-      });
+        block: 'center',
+        inline: 'start'
+      })
     }
-  }, [isDropdownOpen, options, value]);
+  }, [isDropdownOpen, options, value])
 
   const handleOptionSelect = (optionValue: string) => {
-    setDropdownOpen(false);
-    setSearchTerm("");
-    onChange(optionValue);
-  };
+    setDropdownOpen(false)
+    setSearchTerm('')
+    onChange(optionValue)
+  }
 
-  const handleSearchFocus = () => setDropdownOpen(true);
-  const handleSearchBlur = () => setTimeout(() => setDropdownOpen(false), 150);
-  const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) =>
-    setSearchTerm(event.target.value);
+  const handleSearchFocus = () => { setDropdownOpen(true) }
+  const handleSearchBlur = () => setTimeout(() => { setDropdownOpen(false) }, 150)
+  const handleSearchChange: ChangeEventHandler<HTMLInputElement> = (event) => { setSearchTerm(event.target.value) }
 
   const filteredOptions = isSearchable
     ? options.filter((option) => {
-        if (searchTerm.trim() === "") {
-          return true;
-        }
+      if (searchTerm.trim() === '') {
+        return true
+      }
 
-        const words = searchTerm.trim().toLowerCase().split(/\s+/);
-        const label = option.label.toLowerCase();
+      const words = searchTerm.trim().toLowerCase().split(/\s+/)
+      const label = option.label.toLowerCase()
 
-        return words.every(
-          (word) =>
-            slugify(label, {
-              lower: true,
-              remove: /[$*_+~.()'"!\-:@]/g,
-            }).indexOf(word) !== -1
-        );
-      })
-    : options;
+      return words.every(
+        (word) =>
+          slugify(label, {
+            lower: true,
+            remove: /[$*_+~.()'"!\-:@]/g
+          }).includes(word)
+      )
+    })
+    : options
 
-  const hasHits = filteredOptions.length > 0;
+  const hasHits = filteredOptions.length > 0
 
   return (
     <div className={className} ref={dropdownRef}>
       <>
-        {isLoading ? (
-          <PuffLoader color="white" size={35} />
-        ) : (
-          <div className="">
-            {React.cloneElement(triggerElement, {
-              onClick: () => setDropdownOpen(!isDropdownOpen),
-            })}
-          </div>
-        )}
+        {isLoading
+          ? (
+            <PuffLoader color="white" size={35} />
+            )
+          : (
+            <div className="">
+              {React.cloneElement(triggerElement, {
+                onClick: () => { setDropdownOpen(!isDropdownOpen) }
+              })}
+            </div>
+            )}
       </>
       {isDropdownOpen && (
         <div
           style={{
-            position: "fixed",
+            position: 'fixed',
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)", // Semi-transparent black
-            zIndex: 9, // Ensure this is below the dropdown but above everything else
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.5)', // Semi-transparent black
+            zIndex: 9 // Ensure this is below the dropdown but above everything else
           }}
-          onClick={() => setDropdownOpen(false)} // Close dropdown when backdrop is clicked
+          onClick={() => { setDropdownOpen(false) }} // Close dropdown when backdrop is clicked
         />
       )}
       {hasHits && options.length > 0 && isDropdownOpen && (
         <div
           style={{
-            width: "calc(100vw - 2rem)",
-            zIndex: "20",
-            maxHeight: "40vh",
+            width: 'calc(100vw - 2rem)',
+            zIndex: '20',
+            maxHeight: '40vh'
           }}
           className="absolute right-4 mt-2 overflow-auto rounded bg-gray-100 p-2 shadow-lg"
         >
@@ -155,11 +156,11 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
             {filteredOptions.map((option, index) => (
               <li
                 key={option.value}
-                onClick={() => handleOptionSelect(option.value)}
+                onClick={() => { handleOptionSelect(option.value) }}
                 className={`cursor-pointer px-2 py-1 hover:bg-blue-500 hover:text-white sm:px-4 sm:py-2 ${
                   value === option.value
-                    ? "bg-blue-500 text-white"
-                    : "text-gray-800 hover:bg-gray-200"
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-800 hover:bg-gray-200'
                 }`}
                 role="option"
                 aria-selected={value === option.value}
@@ -173,7 +174,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       )}
       {/* <input type="hidden" value={value} /> */}
     </div>
-  );
-};
+  )
+}
 
-export default CustomSelect;
+export default CustomSelect

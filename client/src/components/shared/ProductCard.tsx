@@ -1,66 +1,72 @@
-import React, { useState } from "react";
-import { Product } from "src/types";
+import React, { useState } from 'react'
+import { type Product } from 'src/types'
 
-//@ts-ignore
-import CheckMark from "@iconscout/react-unicons/icons/uil-check";
-import ProductModal from "../ProductModal";
+// @ts-expect-error
+import CheckMark from '@iconscout/react-unicons/icons/uil-check'
+import ProductModal from '../ProductModal'
 
 interface Props {
-  product: Product | undefined;
-  isSelected?: boolean;
-  toggleSelectHandler?: any;
-  showSelect?: boolean;
+  product: Product | undefined
+  isSelected?: boolean
+  toggleSelectHandler?: any
+  showSelect?: boolean
+  minWidth?: string
+  minHeight?: string
 }
 
-export default function ProductCard({
+export default function ProductCard ({
   product,
   isSelected,
   toggleSelectHandler,
   showSelect = false,
+  minWidth = '0rem',
+  minHeight = '0rem'
 }: Props) {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   return (
     <div className="relative">
       <ProductModal
         product={product}
         isOpen={modalIsOpen}
-        onRequestClose={() => setModalIsOpen(false)}
+        onRequestClose={() => { setModalIsOpen(false) }}
       />
       {!!toggleSelectHandler && showSelect && (
         <div onClick={toggleSelectHandler ? toggleSelectHandler() : () => {}}>
-          {isSelected ? (
-            <span className="absolute left-2 top-2 rounded-md bg-gray-900 px-2 py-1 text-xs text-white">
-              <CheckMark size="17" className="text-2xl" />
-            </span>
-          ) : (
-            <span className="absolute left-2 top-2 rounded-md bg-gray-900 px-2 py-1 text-xs text-white">
-              <div className="p-2"></div>
-            </span>
-          )}
+          {isSelected
+            ? (
+              <span className="absolute px-2 py-1 text-xs text-white bg-gray-900 rounded-md left-2 top-2">
+                <CheckMark size="17" className="text-2xl" />
+              </span>
+              )
+            : (
+              <span className="absolute px-2 py-1 text-xs text-white bg-gray-900 rounded-md left-2 top-2">
+                <div className="p-2"></div>
+              </span>
+              )}
         </div>
       )}
       <div
-        className={`flex h-full w-full cursor-pointer flex-col justify-between rounded-md border shadow-md transition duration-200 ease-in-out hover:shadow-lg ${
-          isSelected ? "bg-white opacity-50" : "bg-white"
+        className={`flex  h-full min-h-[${minHeight}] min-w-[${minWidth}]  cursor-pointer flex-col justify-between rounded-md border shadow-md transition duration-200 ease-in-out hover:shadow-lg ${
+          isSelected ? 'bg-white opacity-50' : 'bg-white'
         }`}
         onClick={() => {
-          setModalIsOpen(true);
+          setModalIsOpen(true)
         }}
       >
-        <div className="relative">
+        <div className="relative w-full">
           <img
-            className="max-h-40 w-full rounded-t-md object-cover pt-12"
+            className="object-cover w-full pt-12 max-h-40 rounded-t-md"
             src={
-              product && product.images && product?.images.length > 0
+              product?.images && product?.images.length > 0
                 ? product?.images[2].url
-                : ""
+                : ''
             }
             alt={product?.name}
-            style={{ objectFit: "contain" }}
+            style={{ objectFit: 'contain' }}
           />
 
-          <span className="absolute right-2 top-2 rounded-md bg-gray-900 px-2 py-1 text-xs text-white">
+          <span className="absolute px-2 py-1 text-xs text-white bg-gray-900 rounded-md right-2 top-2">
             {product?.mainCategory.name}
           </span>
         </div>
@@ -68,16 +74,15 @@ export default function ProductCard({
           <h2 className="font-bold">{product?.name}</h2>
           <p className="mb-4 text-base text-gray-700">{product?.description}</p>
           <div className="flex justify-between text-xs text-gray-600">
-            <span>{`${Boolean(product?.abv) ? product?.abv + "%" : ""}`}</span>
+            <span>{`${product?.abv ? product?.abv + '%' : ''}`}</span>
           </div>
           <div className="flex items-center justify-between">
             <div className="text-xl font-bold">
               {Math.round(Number(product?.price))} kr
             </div>
-    
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

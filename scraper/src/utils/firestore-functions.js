@@ -1,16 +1,12 @@
 import { Firestore } from "@google-cloud/firestore";
+import SAkey from "../../drikkekompis-firestore-test.json" assert { type: "json" };
 import dotenv from "dotenv";
 
 dotenv.config();
 
 let firestoreInstance;
 
-const serviceAccount =
-  process.env.NODE_ENV === "production"
-    ? null
-    : await import("../../drikkekompis-firestore-test.json", {
-        assert: { type: "json" },
-      });
+const serviceAccount = process.env.NODE_ENV === "production" ? null : SAkey;
 
 // Rest of the code remains the same
 
@@ -26,7 +22,7 @@ async function initializeFirestore() {
 
     firestoreInstance = new Firestore(firestoreConfig);
   }
-  console.log("Firestore initialized: " + firestoreInstance);
+  console.log("Firestore initialized: " + JSON.stringify(firestoreInstance));
 }
 
 async function getFirestoreInstance() {

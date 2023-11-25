@@ -3,7 +3,7 @@ FROM node:18-alpine
 
 ENV VITE_SERVER_URL=https://server-wyqxm5q4yq-lz.a.run.app/
 ENV VITE_ENVIRONMENT=production
-ENV VITE_CLIENT_URL=https://drikkekompis.eu
+ENV VITE_CLIENT_URL=https://drikkekompis.app
 
 WORKDIR /app/client
 COPY ./package*.json ./

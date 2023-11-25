@@ -1,12 +1,12 @@
-import "./index.css";
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { QueryClientProvider } from "./providers/QueryClientProvider";
+import './index.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import { QueryClientProvider } from './providers/QueryClientProvider'
 
-import { AppStateProvider } from "./context/AppState.context";
+import { AppStateProvider } from './context/AppState.context'
 
-ReactDOM.createRoot(document.getElementById("root") as Element).render(
+ReactDOM.createRoot(document.getElementById('root') as Element).render(
   <React.StrictMode>
     <QueryClientProvider>
       <AppStateProvider>
@@ -14,4 +14,4 @@ ReactDOM.createRoot(document.getElementById("root") as Element).render(
       </AppStateProvider>
     </QueryClientProvider>
   </React.StrictMode>
-);
+)

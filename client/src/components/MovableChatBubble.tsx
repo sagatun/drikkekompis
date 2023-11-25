@@ -1,84 +1,84 @@
-import React, { useState, useEffect, useRef } from "react";
-//@ts-ignore
-import FiMessageCircle from "@iconscout/react-unicons/icons/uil-react";
+import React, { useState, useEffect, useRef } from 'react'
+// @ts-expect-error
+import FiMessageCircle from '@iconscout/react-unicons/icons/uil-react'
 
 const MovableChatBubble = () => {
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const animationTimeout = useRef<any>(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const animationTimeout = useRef<any>(null)
 
   const handleStart = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
 
-    const { clientX, clientY } = getCoordinates(e);
+    const { clientX, clientY } = getCoordinates(e)
 
-    setIsDragging(true);
+    setIsDragging(true)
     setPosition((prev) => {
-      const newX = Math.min(Math.max(clientX - 25, 0), window.innerWidth - 50);
-      const newY = Math.min(Math.max(clientY - 25, 0), window.innerHeight - 50);
-      return { x: newX, y: newY };
-    });
-  };
+      const newX = Math.min(Math.max(clientX - 25, 0), window.innerWidth - 50)
+      const newY = Math.min(Math.max(clientY - 25, 0), window.innerHeight - 50)
+      return { x: newX, y: newY }
+    })
+  }
 
   const handleMove = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
 
-    const { clientX, clientY } = getCoordinates(e);
+    const { clientX, clientY } = getCoordinates(e)
 
     if (isDragging) {
       setPosition((prev) => {
         const newX = Math.min(
           Math.max(clientX - 25, 0),
           window.innerWidth - 50
-        );
+        )
         const newY = Math.min(
           Math.max(clientY - 25, 0),
           window.innerHeight - 50
-        );
-        return { x: newX, y: newY };
-      });
+        )
+        return { x: newX, y: newY }
+      })
     }
-  };
+  }
 
   const handleEnd = (e: any) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     if (animationTimeout.current) {
-      clearTimeout(animationTimeout.current);
+      clearTimeout(animationTimeout.current)
     }
-    animationTimeout.current = setTimeout(() => setIsDragging(false), 100);
-  };
+    animationTimeout.current = setTimeout(() => { setIsDragging(false) }, 100)
+  }
 
   const getCoordinates = (e: any) => {
-    if (e.type.startsWith("touch")) {
+    if (e.type.startsWith('touch')) {
       return {
         clientX: e.touches[0].clientX,
-        clientY: e.touches[0].clientY,
-      };
+        clientY: e.touches[0].clientY
+      }
     } else {
       return {
         clientX: e.clientX,
-        clientY: e.clientY,
-      };
+        clientY: e.clientY
+      }
     }
-  };
+  }
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener("touchmove", handleMove);
-      document.addEventListener("touchend", handleEnd);
+      document.addEventListener('touchmove', handleMove)
+      document.addEventListener('touchend', handleEnd)
     } else {
-      document.removeEventListener("touchmove", handleMove);
-      document.removeEventListener("touchend", handleEnd);
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
     }
 
     return () => {
-      document.removeEventListener("touchmove", handleMove);
-      document.removeEventListener("touchend", handleEnd);
-    };
-  }, [isDragging]);
+      document.removeEventListener('touchmove', handleMove)
+      document.removeEventListener('touchend', handleEnd)
+    }
+  }, [isDragging])
 
   return (
     <div
@@ -92,13 +92,13 @@ const MovableChatBubble = () => {
     >
       <div
         className={`rounded-full bg-blue-500 p-2 text-white shadow-lg transition-colors duration-300 ease-in-out ${
-          isDragging ? "bg-blue-600" : ""
+          isDragging ? 'bg-blue-600' : ''
         }`}
       >
         <FiMessageCircle size={24} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default MovableChatBubble;
+export default MovableChatBubble
