@@ -48,16 +48,16 @@ export default function RecommendationFromUserInput() {
     if (randomizedProductsInStore.length > 0) {
       setPersona(personality);
     }
-  }, [filteredProductsInStore]);
+  }, [productsInStore]);
 
   useEffect(() => {
-    if (filteredProductsInStore.length > 0) {
-      const randomizedProducts = filteredProductsInStore.sort(
+    if (productsInStore.length > 0) {
+      const randomizedProducts = productsInStore.sort(
         () => Math.random() - 0.5
       );
       setRandomizedProductsInStore(randomizedProducts);
     }
-  }, [filteredProductsInStore]);
+  }, [productsInStore]);
 
   const setRecommendedProducts = (products: Product[] | []) => {
     dispatch({ type: "SET_RECOMMENDED_PRODUCTS", payload: products });

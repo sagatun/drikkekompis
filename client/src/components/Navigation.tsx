@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useIsFetching } from "@tanstack/react-query";
 import { useAppState } from "../context/AppState.context";
 import { ClipLoader } from "react-spinners";
@@ -11,9 +11,11 @@ function Navigation() {
   });
   const { productsInStore, selectedStore } = state;
 
+  const [_, setForceRender] = useState(false);
+
   const params = useRouter();
 
-  const view = params.state?.location?.pathname;
+  const view = params.state.location ? params.state?.location?.pathname : "/";
 
   const productsDisabled =
     !productsInStore || productsInStore.length === 0 || productsIsFetching > 0;
@@ -22,16 +24,21 @@ function Navigation() {
 
   return (
     <nav className="flex justify-start gap-2 align-middle">
-      <Link
-        from="/products"
-        to="/"
-        activeOptions={{ exact: true }}
-        className={`rounded px-4 py-2 text-white ${
-          view === "/" ? "bg-orange-400" : "bg-gray-400"
-        }`}
-      >
-        Chat
-      </Link>
+      {!!selectedStore && (
+        <Link
+          to="/"
+          onClick={() => {
+            setForceRender(!_);
+          }}
+          replace={true}
+          preload="intent"
+          className={`rounded px-4 py-2 text-white ${
+            view === "/" ? "bg-orange-400" : "bg-gray-400"
+          }`}
+        >
+          Chat
+        </Link>
+      )}
 
       {!!selectedStore && (
         <Link to="/products" preload="intent">
