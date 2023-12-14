@@ -112,7 +112,7 @@ export async function deleteOutdatedStores(firestore, storeIDs) {
     return;
     throw new Error("Too few stores in list, manual confirmation required.");
   }
-  const storesSnapshot = await firestore.collection("stores").get();
+  const storesSnapshot = await firestore.collection("stores_new").get();
   const deleteQueue = [];
 
   storesSnapshot.forEach((doc) => {
@@ -158,6 +158,10 @@ export function chunkArray(array, chunkSize) {
 }
 
 export async function scrapeStoreByCategory(browser, storeId, category) {
+  if (!storeId || category === "" || Boolean(!category)) {
+    console.error("Missing storeId or category");
+    return {};
+  }
   const initialUrl = `https://www.vinmonopolet.no/search?q=:relevance:availableInStores:${storeId}:mainCategory:${category}&searchType=product&currentPage=0`;
 
   const page = await newPageWithRandomUserAgent(browser);
@@ -266,7 +270,7 @@ export async function getStores(SCRAPE_ALL_STORES = false) {
 
     // fetch the list of already scraped stores, sorted by lastScraped timestamp
     const scrapedStoresSnapshot = await firestore
-      .collection("stores")
+      .collection("stores_new")
       .where("lastScraped", "!=", null)
       .orderBy("lastScraped")
       .get();
@@ -354,6 +358,7 @@ async function extractProductIdsAndStockFromPage(page, maxRetries = 3) {
             const stockStatusText = stockStatusElement
               .querySelector("span:first-child")
               .textContent.trim();
+
             const stock = parseInt(stockStatusText.match(/\d+/)[0]);
 
             productsObject[productId] = {

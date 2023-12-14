@@ -2,8 +2,10 @@ import { initializeOpenAI } from "./chatGPT/chatGPTfunctions";
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import cron from "node-cron";
 import { router } from "./routes/routes";
 import { initializeFirestore } from "./functions/firestore-functions";
+import { fetchAndCacheAllProducts } from "./functions/fetch-functions";
 
 dotenv.config();
 const app = express();
@@ -19,7 +21,7 @@ app.use(
       "https://www.drikkekompis.eu",
       "https://www.drikkekompis.app",
       "https://erik-lessoneditor.nw.r.appspot.com",
-      "https://lessoneditor.ew.r.appspot.com"
+      "https://lessoneditor.ew.r.appspot.com",
     ],
     credentials: true,
   })
@@ -31,6 +33,9 @@ async function initializeServer() {
   try {
     await initializeOpenAI();
     await initializeFirestore();
+
+    // Schedule the job to run at 2 AM every day
+    cron.schedule("0 2 * * *", fetchAndCacheAllProducts);
   } catch (error) {
     console.log(error);
   }

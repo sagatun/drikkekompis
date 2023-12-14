@@ -2,6 +2,7 @@ import express from "express";
 
 import {
   getAllStores,
+  getAllStoresWithProducts,
   getAllProducts,
   getAllProductsInStore,
   chatGPTConversationController,
@@ -16,6 +17,8 @@ router.get("/", (req, res) => {
 router.post("/get-conversation", chatGPTConversationController);
 
 router.get("/get-all-stores", getAllStores);
+
+router.get("/get-all-stores-with-products", getAllStoresWithProducts);
 
 router.get("/get-all-products", getAllProducts);
 

@@ -10,7 +10,7 @@ import { getFirestoreInstance } from "../utils/firestore-functions.js";
 import { KATEGORIER } from "../utils/constants.js";
 import { Timestamp } from "@google-cloud/firestore";
 
-const SCRAPE_ALL_STORES = true;
+const SCRAPE_ALL_STORES = false;
 
 async function scrapeAllProductDataFromStores() {
   const startTime = Date.now();
@@ -77,41 +77,40 @@ async function scrapeAllProductDataFromStores() {
         }
       }
 
-      const mainProductsCollectionRef = firestore.collection("products");
-
-      const storeRef = firestore.collection("stores_new").doc(storeId);
+      const storeRef = firestore.collection("stores").doc(storeId);
 
       await storeRef.set({ store_id: storeId });
 
-      // const productsCollectionRef = storeRef.collection("products");
+      const productsCollectionRef = storeRef.collection("products");
 
-      // // Delete all documents in the products subcollection
-      // const snapshot = await productsCollectionRef.get();
+      // Delete all documents in the products subcollection
+      const snapshot = await productsCollectionRef.get();
 
-      // const deletionPromises = snapshot.docs.map((doc) => doc.ref.delete());
+      const deletionPromises = snapshot.docs.map((doc) => doc.ref.delete());
 
-      // await Promise.all(deletionPromises);
+      await Promise.all(deletionPromises);
 
       let currentTimestamp = Timestamp.now();
 
       if (Object.keys(products).length > 0) {
-        const storeRef = firestore.collection("stores_new").doc(storeId);
+        const storeRef = firestore.collection("stores").doc(storeId);
 
-        // const productsCollectionRef = firestore.collection("products");
+        await storeRef.set({
+          store_id: storeId,
+          lastScraped: currentTimestamp,
+        });
+
+        const productsCollectionRef = storeRef.collection("products");
 
         const productEntries = Object.entries(products);
 
         // Split the productEntries into smaller chunks of at most 500
         const productChunks = chunkArray(productEntries, 500);
 
-        const productIds = [];
-
         for (const productChunk of productChunks) {
           const batch = firestore.batch();
 
-          for (const [productId, product] of productChunk) {
-            const stock = product.stock;
-            delete product.stock;
+          productChunk.forEach(([productId, product]) => {
             const cleanedProduct = scrapedProductToPlainObject(product);
             if (
               typeof cleanedProduct !== "object" ||
@@ -123,30 +122,11 @@ async function scrapeAllProductDataFromStores() {
               );
               return; // Skip this product
             }
-
-            const productRef = mainProductsCollectionRef.doc(productId);
-            const doc = await productRef.get();
-            if (!doc.exists) {
-              batch.set(productRef, cleanedProduct);
-            }
-
-            productIds.push({
-              productId: productId,
-              stock: stock,
-            });
-          }
+            const productRef = productsCollectionRef.doc(productId);
+            batch.set(productRef, cleanedProduct);
+          });
 
           await batch.commit();
-        }
-
-        try {
-          await storeRef.set({
-            store_id: storeId,
-            lastScraped: currentTimestamp,
-            productIds: productIds,
-          });
-        } catch (error) {
-          console.error(`Failed to set productIds for store ${storeId}`, error);
         }
       }
 

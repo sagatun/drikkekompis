@@ -13,7 +13,6 @@ export const KATEGORIER = [
   "mjød",
   "sake",
   "fruktvin",
-  "øvrig_svakvin",
 ];
 
 export const RESOURCE_TYPES_TO_BLOCK = [

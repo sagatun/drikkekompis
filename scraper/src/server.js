@@ -3,6 +3,10 @@ import express from "express";
 import scrapeAllProductDataFromStores from "./scraper/scraper.js";
 import { removeLastScrapedFromStores } from "./utils/deleteLastUpdatedEntries.js";
 import { getFirestoreInstance } from "./utils/firestore-functions.js";
+import { updateProductRatingsInFirestore } from "./utils/get-ratings-from-apertif.js";
+
+import { updateBeerRatings } from "./utils/get-ratings-from-untapped.js";
+import { updateWineRatings } from "./utils/get-ratings-from-vivino.js";
 
 const app = express();
 
@@ -21,6 +25,21 @@ app.get("/init_scrape", async (req, res) => {
 
 app.get("/", async (req, res) => {
   res.send("<h2>hello scraper...</h2");
+});
+
+app.get("/get_ratings", async (req, res) => {
+  updateProductRatingsInFirestore();
+  res.send("<h2>Getting ratings...</h2");
+});
+
+app.get("/get_untappd", async (req, res) => {
+  updateBeerRatings();
+  res.send("<h2>Getting ratings...</h2");
+});
+
+app.get("/get_vivino", async (req, res) => {
+  updateWineRatings();
+  res.send("<h2>Getting ratings...</h2");
 });
 
 app.listen(PORT, () => {
