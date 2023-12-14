@@ -22,7 +22,7 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/expert192.png",
     description:
-      "Basert på GPT-4-Turbo, Eksperten er en AI-språkmodell utstyrt med en dyp kunnskapsbase om alkoholholdige og alkoholfrie drikker. Selv om responstiden kan være litt tregere, er anbefalingene mer presise og nøyaktige, noe som gjør Eksperten til en ideell samtalepartner for de som søker profesjonell rådgivning om drikkevarer.",
+      "Eksperten, din ultimate guide i drikkekunstens verden! Med en umiskjennelig dybde og rikdom av kunnskap, står Eksperten klar til å dele sin innsikt om både alkoholholdige og alkoholfrie drikker. For de som søker detaljerte og innsiktsfulle anbefalinger, er Eksperten den perfekte samtalepartneren.",
     value: "expert",
     label: "Eksperten",
   },
@@ -30,7 +30,7 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/standup192.png",
     description:
-      "StandupKomiker, drevet av GPT-4-Turbo, er den morsomste eksperten på god drikke! Med en skarp og sofistikert humor beregnet for et voksent publikum, leverer denne AI-språkmodellen underholdende og humoristiske anbefalinger. Selv om responstiden kan være litt tregere, er anbefalingene fulle av vittige kommentarer og morsomme innfall, perfekt for de som ønsker å kombinere drikkekunnskap med en god latter.",
+      "Møt StandupKomiker, der humor og drikkekunnskap flyter i perfekt harmoni! Med en skarp og sofistikert sans for humor, er StandupKomiker klar til å levere underholdende og humoristiske anbefalinger som garantert vil sette et smil om munnen din. Perfekt for de som ønsker å krydre sin drikkeopplevelse med en god dose latter.",
     value: "standup",
     label: "StandupKomiker",
   },
@@ -38,7 +38,7 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/gangsta192.png",
     description:
-      "DrikkeGKompiz, drevet av GPT-4-Turbo, formidler sin omfattende kunnskap om drikkevarer gjennom rytmiske rap-vers med en unik gangsta stil. Selv om responsene kan ta litt tid, er de fullpakket med detaljer og kreative rytmer, noe som gir en unik og underholdende opplevelse.",
+      "DrikkeGkompiZ er ikke bare en AI – det er en stilikon med rytme i blodet! Med en unik gangsta stil, formidler denne personaen kunnskap om drikkevarer gjennom fengende rap-vers. For de som søker en opplevelse utenom det vanlige, er DrikkeGkompiZ den ideelle partneren for rytmiske og kreative drikkeanbefalinger.",
     value: "rapper",
     label: "DrikkeGkompiZ",
   },
@@ -46,7 +46,7 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/sarkastisk192.png",
     description:
-      "DrikkeIronisk, drevet av GPT-4-Turbo, tar sarkasme til et nytt nivå med enda mer presise og vittige kommentarer. Selv om responstiden kan være litt tregere, er anbefalingene mer innsiktsfulle og skarpe, noe som gjør DrikkeIronisk til en ideell samtalepartner for de som setter pris på en litt tørr humor.",
+      "DrikkeIronisk bringer sarkasmen til nye høyder! Med skarpe og vittige kommentarer, er denne personaen en mester i kunsten å kombinere drikkekunnskap med et tørt vidd. Perfekt for de som setter pris på et intelligent humornivå i sine samtaler om drikkevarer.",
     value: "sarcastic",
     label: "DrikkeIronisk",
   },
@@ -54,7 +54,7 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/pirat192.png",
     description:
-      "Sjøsprøyt, drevet av GPT-4-Turbo, tar piratpersonligheten til et nytt nivå med enda mer detaljerte og levende fortellinger. Selv om responsene kan ta litt tid, er de fullpakket med fargerike beskrivelser og eventyrlige anbefalinger, noe som gir en unik og engasjerende opplevelse.",
+      "Sjøsprøyt, en ekte pirat av en AI! Med levende fortellinger og fargerike beskrivelser, tar Sjøsprøyt deg med på et eventyrlig dykk inn i drikkeverdenen. For de som ønsker en engasjerende og unik drikkeopplevelse, er Sjøsprøyt den ideelle følgesvenn på reisen.",
     value: "pirat",
     label: "Sjøsprøyt",
   },
@@ -62,14 +62,14 @@ const personalityOptions = [
     gptModel: gpt4model,
     imageUrl: "personas/poet192.png",
     description:
-      "Poeten, drevet av GPT-4-Turbo, tar poesi til et nytt nivå med enda mer detaljerte og raffinerte vers. Selv om responstiden kan være litt tregere, er anbefalingene mer dyptgående og tankevekkende, noe som gjør Poeten til en ideell samtalepartner for de som søker en berikende opplevelse.",
+      "Poeten, der hver anbefaling er et mesterverk av ordkunst! Med dyptgående og raffinerte vers, tilbyr Poeten en berikende og tankevekkende tilnærming til drikkekunnskap. For de som søker en mer poetisk og følelsesladet samtale om drikkevarer, er Poeten den perfekte samtalepartneren.",
     value: "poet",
     label: "Poeten",
   },
 ];
 
 export default function PersonaModal() {
-  const [state, dispatch] = useAppState();
+  const { state, dispatch } = useAppState();
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const { personality } = state;
 

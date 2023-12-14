@@ -27,7 +27,7 @@ export default function ChatComponent({
   setInputMessage = () => {},
   messages,
 }: ChatComponentProps) {
-  const [state] = useAppState();
+  const { state } = useAppState();
 
   const { personality } = state;
 

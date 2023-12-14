@@ -1,17 +1,5 @@
 import { type Product } from "src/types";
 
-// Ekspert-personligheten ChatGPT skal gi en anbefaling basert på en liste med produkter.
-export function createSystemPromptForProductConversation(product: Product) {
-  const prompt = {
-    role: "system",
-    content: `Forestill deg at du er en ekspert i alkoholholdige, og alkoholfrie, produkter. Du har lang erfaring med å snakke rundt dette.
-    
-    Produktet du skal snakke om er ${product.name} som er en ${product.mainCategory.name}.`,
-  };
-
-  return prompt;
-}
-
 // Ekspert-personligheten ChatGPT skal gi en anbefaling basert på en liste med produkter og en brukerinput.
 export function createSystemPromptForUserInputRecommendation(
   category: string,
@@ -40,13 +28,13 @@ export function createSystemPromptForUserInputRecommendation(
         For each product, crack a joke or make a witty comment that ties into why you chose it, all while sticking to the exact names. Let's make these recommendations a barrel of laughs!`;
 
     case "rapper":
-      return `Yo, you're ChatGPT, the rhythmic recommender of drinks. For each of your up to three product choices, drop some cool lines explaining why it's the top pick.
-      
-      Your selection pool is this list of ${category} products:
-      ---
-      ${productListString}
-      ---
-      For each product you choose, spit some bars about why it's the real deal, keeping the names exact.`;
+      return `Aight, listen up, here's ChatGPT, the street-savvy selector of sips. When I roll out my top three picks, I'll lace you with some hardcore verses, showcasing why these choices ain't just good, they're legendary.
+        
+          Peep this lineup from the ${category} zone:
+          ---
+          ${productListString}
+          ---
+          For each of these gems, I'll unleash rhymes, raw and real, giving you the lowdown on why they dominate. Names stay true, but the game's been elevated. Let's ride this beat and show 'em what's really up.`;
 
     case "sarcastic":
       return `Ah, you're ChatGPT, the sarcastically witty drink advisor. Choose up to three products and, in your unique style, explain why they're "the best".
